@@ -34,7 +34,7 @@ export function Sidebar() {
     const { user, logout } = useAuth();
 
     return (
-        <div className="w-72 h-screen bg-[#0b1121] border-r border-white/10 flex flex-col fixed left-0 top-0 bottom-0 z-50">
+        <div className="w-72 h-[100svh] bg-[#0b1121] border-r border-white/10 flex flex-col fixed left-0 top-0 bottom-0 z-50">
             {/* Logo Section */}
             <div className="p-8 pb-4">
                 <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ export function Sidebar() {
 
             {/* Bottom Section */}
             {user && (
-                <div className="p-8 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-6 shrink-0">
+                <div className="p-8 py-10 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-6 shrink-0 mt-auto">
                     <button
                         onClick={() => logout()}
                         className="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
