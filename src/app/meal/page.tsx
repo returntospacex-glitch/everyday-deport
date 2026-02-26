@@ -328,29 +328,8 @@ export default function MealPage() {
                                 <Settings className="w-4 h-4" />
                             </button>
                         </div>
-                        <p className="text-sm text-white/40 font-bold">최근 5번의 식사를 분석하여 전문적인 영양 리포트를 제공합니다.</p>
+                        <p className="text-sm text-white/40 font-bold">최근 5번의 식사를 분석하여 영양 리포트를 자동으로 업데이트합니다.</p>
                     </div>
-                    <button
-                        onClick={handleAnalyze}
-                        disabled={isAnalyzing || meals.length === 0}
-                        className={`
-                            shrink-0 flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl
-                            ${isAnalyzing ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-500 text-white hover:brightness-110 active:scale-95 shadow-indigo-500/20'}
-                            disabled:opacity-50 disabled:cursor-not-allowed
-                        `}
-                    >
-                        {isAnalyzing ? (
-                            <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                분석 중...
-                            </>
-                        ) : (
-                            <>
-                                <Sparkles className="w-5 h-5" />
-                                AI 분석 시작하기
-                            </>
-                        )}
-                    </button>
                 </div>
 
                 <AnimatePresence mode="wait">
