@@ -85,7 +85,7 @@ export default function Dashboard() {
         const unsubCategories = onSnapshot(categoriesRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                let list = data.list || [];
+                const list = data.list || [];
                 // 마이그레이션: 문자열 배열인 경우 객체 배열로 변환
                 if (list.length > 0 && typeof list[0] === 'string') {
                     const migrated = list.map((name: string, idx: number) => ({
@@ -1010,7 +1010,7 @@ export default function Dashboard() {
                             <div className="space-y-2">
                                 <h3 className="text-xl font-black text-white">카테고리 삭제</h3>
                                 <p className="text-sm text-white/40 leading-relaxed font-bold">
-                                    <span className="text-white">'{categoryToDelete}'</span> 카테고리를 삭제하시겠습니까?<br />
+                                    <span className="text-white">&apos;{categoryToDelete}&apos;</span> 카테고리를 삭제하시겠습니까?<br />
                                     해당 카테고리의 모든 루틴은 삭제되지 않고<br />
                                     유지됩니다.
                                 </p>

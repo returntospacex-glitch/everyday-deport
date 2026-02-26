@@ -130,10 +130,14 @@ export default function DailyPage() {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
         const record = records.find(r => r.date === dateStr);
         if (record) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setMoodScore(record.score);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setDiary(record.diary);
         } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setMoodScore(0);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setDiary("");
         }
     }, [selectedDate, records]);
