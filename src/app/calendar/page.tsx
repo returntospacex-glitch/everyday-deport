@@ -215,79 +215,40 @@ export default function CalendarPage() {
                                     </div>
 
                                     <div className="mt-3 space-y-1.5 overflow-hidden">
-                                        {/* Sleep Record Indicator */}
+                                        {/* 1. Sleep: 😴 수면기록 */}
                                         {(() => {
                                             const record = sleepRecordsState.find(r => isSameDay(r.date, day));
-                                            if (!record) return null;
-
-                                            return (
-                                                <div className="flex items-center gap-1.5 bg-purple-500/10 w-fit px-1.5 py-0.5 rounded border border-purple-500/20">
+                                            return record ? (
+                                                <div className="flex items-center gap-1.5 bg-purple-500/10 w-full px-2 py-0.5 rounded-lg border border-purple-500/20">
                                                     <Moon className="w-2.5 h-2.5 text-purple-400 fill-current" />
-                                                    <span className="text-[10px] font-bold text-purple-300">{record.duration}h</span>
+                                                    <span className="text-[10px] font-black text-purple-300">{record.duration}h</span>
                                                 </div>
-                                            );
+                                            ) : <div className="h-[21px]" />; // Spacer for empty lines
                                         })()}
 
-                                        {/* Exercise Record Indicator */}
+                                        {/* 2. Exercise: 💪 운동기록 */}
                                         {(() => {
                                             const dayExercises = exerciseRecordsState.filter(r => isSameDay(r.date, day));
-                                            if (dayExercises.length === 0) return null;
                                             const totalDuration = dayExercises.reduce((acc, cur) => acc + (cur.duration || 0), 0);
-                                            return (
-                                                <div className="flex items-center gap-1.5 bg-emerald-500/10 w-full px-1.5 py-0.5 rounded border border-emerald-500/20 truncate">
+                                            return totalDuration > 0 ? (
+                                                <div className="flex items-center gap-1.5 bg-emerald-500/10 w-full px-2 py-0.5 rounded-lg border border-emerald-500/20 truncate">
                                                     <Dumbbell className="w-2.5 h-2.5 text-emerald-400" />
-                                                    <span className="text-[10px] font-bold text-emerald-300 truncate">{totalDuration}m</span>
+                                                    <span className="text-[10px] font-black text-emerald-300 truncate">{totalDuration}m</span>
                                                 </div>
-                                            );
+                                            ) : <div className="h-[21px]" />;
                                         })()}
 
-                                        {/* Reading Record Indicator */}
+                                        {/* 3. Reading: 📚 독서기록 */}
                                         {(() => {
                                             const dayReading = readingRecordsState.filter(r => isSameDay(r.date, day));
-                                            if (dayReading.length === 0) return null;
                                             const totalPages = dayReading.reduce((acc, cur) => acc + (cur.amount || 0), 0);
-                                            return (
-                                                <div className="flex items-center gap-1.5 bg-blue-500/10 w-full px-1.5 py-0.5 rounded border border-blue-500/20 truncate">
+                                            return totalPages > 0 ? (
+                                                <div className="flex items-center gap-1.5 bg-blue-500/10 w-full px-2 py-0.5 rounded-lg border border-blue-500/20 truncate">
                                                     <BookOpen className="w-2.5 h-2.5 text-blue-400" />
-                                                    <span className="text-[10px] font-bold text-blue-300 truncate">{totalPages}p</span>
+                                                    <span className="text-[10px] font-black text-blue-300 truncate">{totalPages}p</span>
                                                 </div>
-                                            );
+                                            ) : <div className="h-[21px]" />;
                                         })()}
-
-                                        {/* Meal Record Indicator */}
-                                        {(() => {
-                                            const dayMeals = mealRecordsState.filter(m => m.date === format(day, 'yyyy-MM-dd'));
-                                            if (dayMeals.length === 0) return null;
-                                            return (
-                                                <div className="flex items-center gap-1.5 bg-orange-500/10 w-full px-1.5 py-0.5 rounded border border-orange-500/20 truncate">
-                                                    <Utensils className="w-2.5 h-2.5 text-orange-400" />
-                                                    <span className="text-[10px] font-bold text-orange-300 truncate">{dayMeals.length}끼</span>
-                                                </div>
-                                            );
-                                        })()}
-
-                                        {/* Google Calendar Events Indicator */}
-                                        {(() => {
-                                            const dayEvents = googleEventsState.filter(event => {
-                                                const dateStr = event.start.dateTime || event.start.date;
-                                                if (!dateStr) return false;
-
-                                                try {
-                                                    const eventDate = parseISO(dateStr);
-                                                    return isValid(eventDate) && isSameDay(eventDate, day);
-                                                } catch (e) {
-                                                    return false;
-                                                }
-                                            });
-                                            if (dayEvents.length === 0) return null;
-                                            return (
-                                                <div className="flex items-center gap-1.5 bg-accent/10 w-full px-1.5 py-0.5 rounded border border-accent/20 truncate">
-                                                    <CalendarIcon className="w-2.5 h-2.5 text-accent" />
-                                                    <span className="text-[10px] font-bold text-accent truncate">{dayEvents.length}개 일정</span>
-                                                </div>
-                                            );
-                                        })()}
-
                                     </div>
                                 </motion.div>
                             </Link>
