@@ -186,7 +186,12 @@ export default function MealPage() {
                 // Only analyze if there are meals to analyze
                 if (last5Meals.length > 0) {
                     const result = await analyzeMeals(last5Meals, customInstructions);
-                    setAiInsight(result);
+                    if (result.success) {
+                        setAiInsight(result.data || null);
+                        setAiError(null);
+                    } else {
+                        setAiError(result.error || "분석에 실패했습니다.");
+                    }
                 }
             } catch (e: any) {
                 console.error("Auto analysis failed:", e);
@@ -242,8 +247,12 @@ export default function MealPage() {
         try {
             const last5Meals = [...meals].sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)).slice(0, 5);
             const result = await analyzeMeals(last5Meals, customInstructions);
-            setAiInsight(result);
-            setAiError(null);
+            if (result.success) {
+                setAiInsight(result.data || null);
+                setAiError(null);
+            } else {
+                setAiError(result.error || "분석에 실패했습니다.");
+            }
         } catch (e: any) {
             console.error(e);
             setAiError(e.message || "AI 분석 중 오류가 발생했습니다.");

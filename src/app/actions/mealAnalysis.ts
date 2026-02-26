@@ -5,20 +5,27 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export async function analyzeMeals(meals: any[], customInstructions?: string) {
     if (!process.env.GEMINI_API_KEY) {
         console.error("GEMINI_API_KEY is not defined in environment variables");
-        throw new Error("서버 설정 오류: API Key가 없습니다.");
+        return { success: false, error: "서버 설정 오류: API Key가 없습니다. Vercel 환경 변수를 확인해주세요." };
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     try {
         // Efficient and widely available models
-        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-pro"];
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-pro"];
         let lastError: any = null;
         let finalResponse = null;
 
         for (const modelName of modelsToTry) {
             try {
-                const model = genAI.getGenerativeModel({ model: modelName });
+                const model = genAI.getGenerativeModel({
+                    model: modelName,
+                    generationConfig: {
+                        temperature: 0.7,
+                        topP: 0.8,
+                        topK: 40,
+                    }
+                });
                 const mealDataStr = meals.map(m => `- ${m.type}: ${m.menu} (${m.calories || '정보 없음'} kcal)`).join("\n");
 
                 const prompt = `
@@ -46,27 +53,27 @@ ${customInstructions || "특별한 추가 지시사항 없음."}
                 const result = await model.generateContent(prompt);
                 const response = await result.response;
                 finalResponse = response.text();
-                if (finalResponse) break; // Success!
+                if (finalResponse) break;
             } catch (err: any) {
                 lastError = err;
                 console.warn(`Failed to analyze with model ${modelName}:`, err.message);
                 if (err.message?.includes("404") || err.message?.includes("not found")) {
-                    continue; // Try next model
+                    continue;
                 }
-                throw err; // Stop for other types of errors (e.g., auth, quota)
+                // Don't throw here, just continue to try other models or handle at the end
             }
         }
 
         if (!finalResponse) {
-            throw lastError || new Error("사용 가능한 AI 모델이 없습니다.");
+            return { success: false, error: lastError?.message || "사용 가능한 AI 모델을 찾을 수 없거나 분석에 실패했습니다." };
         }
 
-        return finalResponse;
+        return { success: true, data: finalResponse };
     } catch (error: any) {
         console.error("Gemini API Detailed Error:", error);
-        if (error.message?.includes("API key not valid")) {
-            throw new Error("유효하지 않은 API Key입니다.");
-        }
-        throw new Error(`AI 분석 실패: ${error.message || "알 수 없는 오류"}`);
+        const errorMsg = error.message?.includes("API key not valid")
+            ? "유효하지 않은 API Key입니다."
+            : `AI 분석 실패: ${error.message || "알 수 없는 오류"}`;
+        return { success: false, error: errorMsg };
     }
 }
