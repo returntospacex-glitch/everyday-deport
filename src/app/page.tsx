@@ -443,7 +443,7 @@ export default function Dashboard() {
                                 <Reorder.Item
                                     key={cat.name}
                                     value={cat}
-                                    className="relative flex-shrink-0"
+                                    className="relative flex-shrink-0 group"
                                 >
                                     <button
                                         onClick={() => setActiveCategory(cat.name)}
@@ -476,74 +476,15 @@ export default function Dashboard() {
                             ))}
                         </Reorder.Group>
 
-                        {isAddingCategory ? (
-                            <motion.div
-                                initial={{ width: 0, opacity: 0 }}
-                                animate={{ width: "auto", opacity: 1 }}
-                                className="flex flex-col gap-3 bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl backdrop-blur-md"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        autoFocus
-                                        placeholder="이름 입력"
-                                        value={newCategoryName}
-                                        onChange={(e) => setNewCategoryName(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                if (newCategoryName && !categories.some(c => c.name === newCategoryName)) {
-                                                    const newList = [...categories, { name: newCategoryName, color: selectedColor }];
-                                                    saveCategoriesToFirestore(newList);
-                                                    setNewCategoryName("");
-                                                    setIsAddingCategory(false);
-                                                }
-                                            } else if (e.key === 'Escape') {
-                                                setIsAddingCategory(false);
-                                            }
-                                        }}
-                                        className="bg-transparent text-sm font-bold text-white focus:outline-none w-24 border-b border-white/20 pb-1"
-                                    />
-                                    <button
-                                        onClick={() => setIsAddingCategory(false)}
-                                        className="text-white/20 hover:text-white"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <div className="flex gap-1.5">
-                                    {PRESET_COLORS.map(color => (
-                                        <button
-                                            key={color.value}
-                                            onClick={() => setSelectedColor(color.value)}
-                                            className={`
-                                                    w-5 h-5 rounded-full transition-transform ring-offset-2 ring-offset-black
-                                                    ${selectedColor === color.value ? 'ring-2 ring-white scale-125' : 'hover:scale-110 opacity-60 hover:opacity-100'}
-                                                `}
-                                            style={{ backgroundColor: color.value }}
-                                        />
-                                    ))}
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        if (newCategoryName && !categories.some(c => c.name === newCategoryName)) {
-                                            const newList = [...categories, { name: newCategoryName, color: selectedColor }];
-                                            saveCategoriesToFirestore(newList);
-                                            setNewCategoryName("");
-                                            setIsAddingCategory(false);
-                                        }
-                                    }}
-                                    className="w-full py-1.5 bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-yellow-400 transition-colors"
-                                >
-                                    추가 완료
-                                </button>
-                            </motion.div>
-                        ) : (
-                            <button
-                                onClick={() => setIsAddingCategory(true)}
-                                className="px-3 py-2 rounded-full text-xs font-bold bg-white/5 text-white/20 hover:bg-white/10 hover:text-white hover:border-white/10 border border-transparent transition-all flex items-center gap-1"
-                            >
-                                <Plus className="w-3 h-3" /> 추가
-                            </button>
-                        )}
+                        <button
+                            onClick={() => setIsAddingCategory(true)}
+                            className="px-6 py-2.5 rounded-full text-sm font-black bg-white/5 text-white/30 hover:bg-white/10 hover:text-white border border-white/5 transition-all flex items-center gap-2 shrink-0 group"
+                        >
+                            <div className="w-5 h-5 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                                <Plus className="w-3 h-3" />
+                            </div>
+                            <span>카테고리 추가</span>
+                        </button>
                     </div>
 
                     <button
@@ -989,6 +930,113 @@ export default function Dashboard() {
                                     삭제하기
                                 </button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Category Add Modal */}
+            <AnimatePresence>
+                {isAddingCategory && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => {
+                                setIsAddingCategory(false);
+                                setNewCategoryName("");
+                            }}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-md glass p-8 space-y-8"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold">카테고리 추가</h2>
+                                <button
+                                    onClick={() => {
+                                        setIsAddingCategory(false);
+                                        setNewCategoryName("");
+                                    }}
+                                    className="text-white/40 hover:text-white"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-white/40">카테고리 이름</label>
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        placeholder="이름을 입력하세요"
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                if (newCategoryName && !categories.some(c => c.name === newCategoryName)) {
+                                                    const newList = [...categories, { name: newCategoryName, color: selectedColor }];
+                                                    saveCategoriesToFirestore(newList);
+                                                    setNewCategoryName("");
+                                                    setIsAddingCategory(false);
+                                                }
+                                            }
+                                        }}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:outline-none focus:border-accent transition-all text-xl font-bold"
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-sm font-medium text-white/40">테마 색상</label>
+                                    <div className="grid grid-cols-6 gap-3">
+                                        {PRESET_COLORS.map(color => (
+                                            <button
+                                                key={color.value}
+                                                onClick={() => setSelectedColor(color.value)}
+                                                className={`
+                                                    aspect-square rounded-full transition-all ring-offset-4 ring-offset-black relative
+                                                    ${selectedColor === color.value ? 'ring-2 ring-white scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'opacity-40 hover:opacity-100 hover:scale-105'}
+                                                `}
+                                                style={{ backgroundColor: color.value }}
+                                            >
+                                                {selectedColor === color.value && (
+                                                    <motion.div
+                                                        layoutId="color-check"
+                                                        className="absolute inset-0 flex items-center justify-center"
+                                                    >
+                                                        <div className="w-2 h-2 bg-white rounded-full" />
+                                                    </motion.div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    if (newCategoryName && !categories.some(c => c.name === newCategoryName)) {
+                                        const newList = [...categories, { name: newCategoryName, color: selectedColor }];
+                                        saveCategoriesToFirestore(newList);
+                                        setNewCategoryName("");
+                                        setIsAddingCategory(false);
+                                    }
+                                }}
+                                disabled={!newCategoryName || categories.some(c => c.name === newCategoryName)}
+                                className={`
+                                    w-full py-5 rounded-2xl font-black transition-all active:scale-[0.98]
+                                    ${newCategoryName && !categories.some(c => c.name === newCategoryName)
+                                        ? "bg-accent text-white shadow-lg shadow-accent/30"
+                                        : "bg-white/5 text-white/20 cursor-not-allowed"}
+                                `}
+                            >
+                                카테고리 추가하기
+                            </button>
                         </motion.div>
                     </div>
                 )}
