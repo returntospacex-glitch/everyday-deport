@@ -48,7 +48,7 @@ export function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-5 flex flex-col justify-evenly overflow-hidden py-2">
+            <nav className="flex-1 px-5 flex flex-col overflow-hidden">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -56,7 +56,7 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={twMerge(
-                                "flex items-center gap-5 px-6 py-4 rounded-2xl transition-all duration-300 group",
+                                "flex-1 flex items-center gap-5 px-6 rounded-2xl transition-all duration-300 group",
                                 isActive
                                     ? "bg-accent/10 text-accent shadow-lg shadow-accent/5"
                                     : "text-white/40 hover:bg-white/5 hover:text-white"
