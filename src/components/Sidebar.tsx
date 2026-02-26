@@ -34,21 +34,21 @@ export function Sidebar() {
     const { user, logout } = useAuth();
 
     return (
-        <div className="w-72 h-screen bg-[#0b1121] border-r border-white/10 flex flex-col fixed left-0 top-0 bottom-0 z-50">
+        <div className="w-64 h-screen bg-[#0b1121] border-r border-white/10 flex flex-col fixed left-0 top-0 bottom-0 z-50">
             {/* Logo Section */}
-            <div className="p-10 pb-6">
+            <div className="p-6 pb-2">
                 <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center shadow-lg shadow-accent/20">
-                        <Sparkles className="text-white w-7 h-7" />
+                    <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg shadow-accent/20">
+                        <Sparkles className="text-white w-6 h-6" />
                     </div>
-                    <h1 className="text-[2.6rem] font-black text-white tracking-tighter leading-none">
+                    <h1 className="text-[2rem] font-black text-white tracking-tighter leading-none">
                         EveryDay
                     </h1>
                 </div>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-5 space-y-4 mt-8 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto custom-scrollbar">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -56,14 +56,14 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={twMerge(
-                                "flex items-center gap-5 px-6 py-4 rounded-2xl transition-all duration-300 group",
+                                "flex items-center gap-4 px-5 py-2.5 rounded-xl transition-all duration-300 group",
                                 isActive
                                     ? "bg-accent/10 text-accent shadow-lg shadow-accent/5"
                                     : "text-white/40 hover:bg-white/5 hover:text-white"
                             )}
                         >
-                            <item.icon className={clsx("w-7 h-7 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
-                            <span className="text-[1.2rem] font-black tracking-tight">{item.name}</span>
+                            <item.icon className={clsx("w-6 h-6 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
+                            <span className="text-[1.05rem] font-black tracking-tight">{item.name}</span>
                         </Link>
                     );
                 })}
@@ -71,12 +71,12 @@ export function Sidebar() {
 
             {/* Bottom Section */}
             {user && (
-                <div className="p-8 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-6">
+                <div className="p-4 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-4">
                     <button
                         onClick={() => logout()}
-                        className="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
                     >
-                        <LogOut className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                        <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span className="text-sm font-black tracking-tight">로그아웃</span>
                     </button>
                     <div className="flex justify-end">
