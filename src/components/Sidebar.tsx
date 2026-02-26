@@ -44,7 +44,7 @@ export function Sidebar() {
                 </h1>
             </div>
 
-            <nav className="flex-1 space-y-1">
+            <nav className="flex-1 space-y-4 mt-8">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -52,14 +52,14 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={twMerge(
-                                "flex items-center gap-4 px-4 py-2.5 rounded-[18px] transition-all duration-300 group",
+                                "flex items-center gap-5 px-6 py-4 rounded-[24px] transition-all duration-300 group",
                                 isActive
-                                    ? "bg-accent/10 text-accent shadow-lg shadow-accent/5"
+                                    ? "bg-accent/10 text-accent shadow-xl shadow-accent/5"
                                     : "text-white/40 hover:bg-white/5 hover:text-white"
                             )}
                         >
-                            <item.icon className={clsx("w-7 h-7 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
-                            <span className="text-[1.2rem] font-black tracking-tight">{item.name}</span>
+                            <item.icon className={clsx("w-8 h-8 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
+                            <span className="text-[1.4rem] font-black tracking-tighter">{item.name}</span>
                         </Link>
                     );
                 })}
