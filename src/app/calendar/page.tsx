@@ -233,52 +233,62 @@ export default function CalendarPage() {
                                         )}
                                     </div>
 
-                                    <div className="mt-3 space-y-1 overflow-hidden">
-                                        {/* 1. Sleep: 😴 수면기록 */}
+                                    <div className="mt-2 space-y-1">
+                                        {/* Row 1: Sleep */}
                                         {(() => {
                                             const record = sleepRecordsState.find(r => {
                                                 if (!r.date) return false;
                                                 const d = r.date instanceof Date ? r.date : (r.date.toDate ? r.date.toDate() : new Date(r.date));
                                                 return isSameDay(d, day);
                                             });
-                                            return record ? (
-                                                <div className="flex items-center gap-1.5 bg-purple-500/10 w-full px-2 py-0.5 rounded-lg border border-purple-500/20">
-                                                    <Moon className="w-2.5 h-2.5 text-purple-400 fill-current" />
-                                                    <span className="text-[10px] font-black text-purple-300">{(record.hoursSlept || record.duration || 0).toFixed(1)}h</span>
-                                                </div>
-                                            ) : <div className="h-[21px]" />; // Spacer
+                                            if (record) {
+                                                const val = record.hoursSlept || record.duration || 0;
+                                                return (
+                                                    <div className="flex items-center gap-1.5 bg-purple-500/10 px-2 py-0.5 rounded-md border border-purple-500/20">
+                                                        <Moon className="w-2.5 h-2.5 text-purple-400 fill-current" />
+                                                        <span className="text-[10px] font-black text-purple-300">{Number(val).toFixed(1)}h</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return <div className="h-4" />; // Empty row placeholder
                                         })()}
 
-                                        {/* 2. Exercise: 💪 운동기록 */}
+                                        {/* Row 2: Exercise */}
                                         {(() => {
                                             const dayExercises = exerciseRecordsState.filter(r => {
                                                 if (!r.date) return false;
                                                 const d = r.date instanceof Date ? r.date : (r.date.toDate ? r.date.toDate() : new Date(r.date));
                                                 return isSameDay(d, day);
                                             });
-                                            const totalDuration = dayExercises.reduce((acc, cur) => acc + (cur.duration || 0), 0);
-                                            return totalDuration > 0 ? (
-                                                <div className="flex items-center gap-1.5 bg-emerald-500/10 w-full px-2 py-0.5 rounded-lg border border-emerald-500/20 truncate">
-                                                    <Dumbbell className="w-2.5 h-2.5 text-emerald-400" />
-                                                    <span className="text-[10px] font-black text-emerald-300 truncate">{totalDuration}m</span>
-                                                </div>
-                                            ) : <div className="h-[21px]" />;
+                                            const total = dayExercises.reduce((acc, cur) => acc + (Number(cur.duration) || 0), 0);
+                                            if (total > 0) {
+                                                return (
+                                                    <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                                        <Dumbbell className="w-2.5 h-2.5 text-emerald-400" />
+                                                        <span className="text-[10px] font-black text-emerald-300">{total}m</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return <div className="h-4" />;
                                         })()}
 
-                                        {/* 3. Reading: 📚 독서기록 */}
+                                        {/* Row 3: Reading */}
                                         {(() => {
                                             const dayReading = readingRecordsState.filter(r => {
                                                 if (!r.date) return false;
                                                 const d = r.date instanceof Date ? r.date : (r.date.toDate ? r.date.toDate() : new Date(r.date));
                                                 return isSameDay(d, day);
                                             });
-                                            const totalPages = dayReading.reduce((acc, cur) => acc + (cur.amount || 0), 0);
-                                            return totalPages > 0 ? (
-                                                <div className="flex items-center gap-1.5 bg-blue-500/10 w-full px-2 py-0.5 rounded-lg border border-blue-500/20 truncate">
-                                                    <BookOpen className="w-2.5 h-2.5 text-blue-400" />
-                                                    <span className="text-[10px] font-black text-blue-300 truncate">{totalPages}p</span>
-                                                </div>
-                                            ) : <div className="h-[21px]" />;
+                                            const total = dayReading.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+                                            if (total > 0) {
+                                                return (
+                                                    <div className="flex items-center gap-1.5 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
+                                                        <BookOpen className="w-2.5 h-2.5 text-blue-400" />
+                                                        <span className="text-[10px] font-black text-blue-300">{total}p</span>
+                                                    </div>
+                                                );
+                                            }
+                                            return <div className="h-4" />;
                                         })()}
                                     </div>
                                 </motion.div>
