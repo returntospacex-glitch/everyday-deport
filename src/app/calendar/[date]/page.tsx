@@ -54,17 +54,23 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
         const dateStr = format(currentTargetDate, 'yyyy-MM-dd');
 
         // 1. Sleep Record Loading
-        const sleepUnsub = onSnapshot(collection(db, "users", user.uid, "sleepRecords"), (snapshot) => {
+        const sleepUnsub = onSnapshot(collection(db, "users", user.uid, "sleep"), (snapshot) => {
             const foundSleep = snapshot.docs
                 .map(doc => ({ ...doc.data(), id: doc.id }))
-                .find((r: any) => isSameDay(new Date(r.date), currentTargetDate));
+                .find((r: any) => {
+                    if (!r.date) return false;
+                    const d = r.date instanceof Timestamp ? r.date.toDate() : new Date(r.date);
+                    return isSameDay(d, currentTargetDate);
+                });
 
             if (foundSleep) {
+                const sleepData = foundSleep as any;
                 setRecord({
-                    ...foundSleep,
-                    date: new Date((foundSleep as any).date),
-                    bedTime: new Date((foundSleep as any).bedTime),
-                    wakeTime: new Date((foundSleep as any).wakeTime)
+                    ...sleepData,
+                    date: sleepData.date instanceof Timestamp ? sleepData.date.toDate() : new Date(sleepData.date),
+                    bedTime: sleepData.bedTime instanceof Timestamp ? sleepData.bedTime.toDate() : new Date(sleepData.bedTime),
+                    wakeTime: sleepData.wakeTime instanceof Timestamp ? sleepData.wakeTime.toDate() : new Date(sleepData.wakeTime),
+                    duration: sleepData.hoursSlept || sleepData.duration || 0
                 });
             } else {
                 setRecord(getSleepRecord(currentTargetDate));
@@ -72,12 +78,15 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
         });
 
         // 2. Exercise Record Loading
-        const exerciseUnsub = onSnapshot(collection(db, "users", user.uid, "exerciseRecords"), (snapshot) => {
-            const allExercises = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                date: (doc.data().date as Timestamp).toDate()
-            })) as ExerciseRecord[];
+        const exerciseUnsub = onSnapshot(collection(db, "users", user.uid, "exercises"), (snapshot) => {
+            const allExercises = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                return {
+                    id: doc.id,
+                    ...data,
+                    date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date)
+                };
+            }) as ExerciseRecord[];
 
             const dayExercises = allExercises.filter(r => isSameDay(r.date, currentTargetDate));
             setDailyExercises(dayExercises);
