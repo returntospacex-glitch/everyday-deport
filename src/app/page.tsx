@@ -525,6 +525,12 @@ export default function Dashboard() {
                                     transition={{ delay: idx * 0.05 }}
                                     key={routine.id}
                                     onDoubleClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleImportant(routine.id);
+                                    }}
+                                    onContextMenu={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation();
                                         toggleImportant(routine.id);
                                     }}
@@ -533,7 +539,7 @@ export default function Dashboard() {
                                         ${routine.isImportant ? "border-red-500/50 bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.1)] !opacity-100" : ""}
                                     `}
                                 >
-                                    <div className="flex items-center gap-4 overflow-hidden flex-1" onClick={() => openEditModal(routine)}>
+                                    <div className="flex items-center gap-4 overflow-hidden flex-1">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -543,8 +549,8 @@ export default function Dashboard() {
                                         >
                                             {routine.completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
                                         </button>
-                                        <div className="truncate">
-                                            <h3 className={`font-bold text-lg truncate ${routine.completed ? "line-through text-white/40" : ""}`}>{routine.title}</h3>
+                                        <div className="truncate flex-1 cursor-text" onClick={() => openEditModal(routine)}>
+                                            <h3 className={`font-bold text-lg truncate ${routine.completed ? "line-through text-white/40" : ""} ${routine.isImportant ? "text-red-400" : ""}`}>{routine.title}</h3>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <span
                                                     className="text-[10px] px-1.5 py-0.5 rounded font-bold"

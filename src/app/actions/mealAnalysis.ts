@@ -11,9 +11,8 @@ export async function analyzeMeals(meals: any[], customInstructions?: string) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     try {
-        // Try multiple models in case of regional or account-specific availability issues
-        // The diagnostic showed gemini-2.0-flash and gemini-2.5-flash are available for this key.
-        const modelsToTry = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
+        // Efficient and widely available models
+        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-pro"];
         let lastError: any = null;
         let finalResponse = null;
 

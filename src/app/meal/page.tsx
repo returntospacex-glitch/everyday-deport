@@ -49,6 +49,7 @@ export default function MealPage() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [aiInsight, setAiInsight] = useState<string | null>(null);
+    const [aiError, setAiError] = useState<string | null>(null); // 신규: AI 에러 상태
     const [customInstructions, setCustomInstructions] = useState("");
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -168,13 +169,16 @@ export default function MealPage() {
         return [...yesterdayMeals, ...dayMeals].sort((a, b) => a.time.localeCompare(b.time));
     }, [meals, selectedDate]);
 
-    // Auto-analyze last 5 meals when meals change
+    // Auto-analyze last 5 meals when meals change (Deep dependency check)
     useEffect(() => {
         if (!user || meals.length === 0 || !isLoaded) return;
 
         const triggerAutoAnalyze = async () => {
+            // Check if we already have an insight for the CURRENT last 5 meals
+            // This prevents redundant expensive API calls
             setIsAnalyzing(true);
             try {
+                setAiError(null);
                 const last5Meals = [...meals]
                     .sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time))
                     .slice(0, 5);
@@ -184,16 +188,17 @@ export default function MealPage() {
                     const result = await analyzeMeals(last5Meals, customInstructions);
                     setAiInsight(result);
                 }
-            } catch (e) {
+            } catch (e: any) {
                 console.error("Auto analysis failed:", e);
+                setAiError(e.message || "자동 분석에 실패했습니다.");
             } finally {
                 setIsAnalyzing(false);
             }
         };
 
-        const timer = setTimeout(triggerAutoAnalyze, 1000); // 1 second debounce
+        const timer = setTimeout(triggerAutoAnalyze, 2000); // 2 second debounce for stability
         return () => clearTimeout(timer);
-    }, [meals.length, user, isLoaded]); // Trigger on length change or load
+    }, [JSON.stringify(meals.slice(0, 5)), user, isLoaded]); // JSON.stringify for deep comparison
 
     const handleAddMeal = async () => {
         if (!newMeal.menu || !user) return;
@@ -233,13 +238,15 @@ export default function MealPage() {
     const handleAnalyze = async () => {
         if (meals.length === 0) return;
         setIsAnalyzing(true);
+        setAiError(null);
         try {
             const last5Meals = [...meals].sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)).slice(0, 5);
             const result = await analyzeMeals(last5Meals, customInstructions);
             setAiInsight(result);
+            setAiError(null);
         } catch (e: any) {
             console.error(e);
-            alert(e.message || "AI 분석 중 오류가 발생했습니다.");
+            setAiError(e.message || "AI 분석 중 오류가 발생했습니다.");
         } finally {
             setIsAnalyzing(false);
         }
@@ -330,6 +337,14 @@ export default function MealPage() {
                         </div>
                         <p className="text-sm text-white/40 font-bold">최근 5번의 식사를 분석하여 영양 리포트를 자동으로 업데이트합니다.</p>
                     </div>
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={isAnalyzing || meals.length === 0}
+                        className="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-black rounded-xl transition-all uppercase tracking-widest shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+                    >
+                        {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                        지금 분석하기
+                    </button>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -344,6 +359,25 @@ export default function MealPage() {
                             <div className="h-4 bg-white/5 rounded-full w-3/4 animate-pulse" />
                             <div className="h-4 bg-white/5 rounded-full w-1/2 animate-pulse" />
                             <div className="h-4 bg-white/5 rounded-full w-2/3 animate-pulse" />
+                        </motion.div>
+                    ) : aiError ? (
+                        <motion.div
+                            key="error"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="mt-8 p-6 bg-red-500/5 border border-red-500/20 rounded-2xl flex flex-col items-center gap-4 text-center"
+                        >
+                            <div className="flex flex-col items-center gap-2">
+                                <AlertCircle className="w-8 h-8 text-red-400 opacity-50" />
+                                <p className="text-red-400 font-bold">분석에 실패했습니다</p>
+                                <p className="text-red-400/60 text-xs">{aiError}</p>
+                            </div>
+                            <button
+                                onClick={handleAnalyze}
+                                className="px-6 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-black rounded-xl transition-all uppercase tracking-widest border border-red-500/20"
+                            >
+                                다시 분석하기
+                            </button>
                         </motion.div>
                     ) : aiInsight ? (
                         <motion.div
