@@ -65,8 +65,9 @@ import {
     getMonthlyExerciseStats,
     ExerciseRecord,
     mergeExerciseRecords,
-    BodyMetricGoal
-} from "@/lib/exerciseData"; // BodyMetricGoal import 추가
+    BodyMetricGoal,
+    BodyMetricRecord
+} from "@/lib/exerciseData"; // BodyMetricRecord import 추가
 import {
     LineChart,
     Line,
@@ -146,22 +147,23 @@ export default function ExercisePage() {
             const loaded = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
                 const data = doc.data();
                 return {
+                    id: doc.id,
                     ...data,
                     date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date),
-                };
+                } as BodyMetricRecord;
             });
             // Sort by date ascending
-            loaded.sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+            loaded.sort((a, b) => a.date.getTime() - b.date.getTime());
             setSavedBodyMetrics(loaded);
 
             // Set latest to input
             if (loaded.length > 0) {
                 const latest = loaded[loaded.length - 1];
                 setBodyMetrics({
-                    weight: latest.weight.toString(),
-                    muscleMass: (latest.muscleMass || "").toString(),
-                    bodyFat: (latest.bodyFat || "").toString(),
-                    fatMass: (latest.fatMass || "").toString()
+                    weight: (latest?.weight ?? "").toString(),
+                    muscleMass: (latest?.muscleMass ?? "").toString(),
+                    bodyFat: (latest?.bodyFat ?? "").toString(),
+                    fatMass: (latest?.fatMass ?? "").toString()
                 });
             }
         });
@@ -1299,7 +1301,13 @@ export default function ExercisePage() {
                                                     contentStyle={{ backgroundColor: '#0b1121', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
                                                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                                     labelStyle={{ color: '#ffffff60', fontSize: '10px', marginBottom: '8px' }}
-                                                    labelFormatter={(date: string | number | Date) => format(new Date(date), 'yyyy년 MM월 dd일')}
+                                                    labelFormatter={(date: any) => {
+                                                        try {
+                                                            return format(new Date(date), 'yyyy년 MM월 dd일');
+                                                        } catch (e) {
+                                                            return String(date);
+                                                        }
+                                                    }}
                                                     itemSorter={(item: any) => {
                                                         const order: Record<string, number> = {
                                                             "체중 (kg)": 1,
