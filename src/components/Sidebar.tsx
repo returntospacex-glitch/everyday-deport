@@ -48,7 +48,7 @@ export function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-5 flex flex-col overflow-hidden pb-4">
+            <nav className="flex-1 px-5 flex flex-col overflow-hidden pb-0">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
