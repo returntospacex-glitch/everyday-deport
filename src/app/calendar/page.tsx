@@ -84,29 +84,43 @@ export default function CalendarPage() {
 
         // 3. Meal Records
         const mealUnsub = onSnapshot(collection(db, "users", user.uid, "meals"), (snapshot) => {
-            const loaded = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const loaded = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                const dateVal = data.date;
+                return {
+                    id: doc.id,
+                    ...data,
+                    date: dateVal?.toDate ? dateVal.toDate() : new Date(dateVal)
+                };
+            });
             setMealRecordsState(loaded);
         });
 
         // 4. Reading Records
         const readingUnsub = onSnapshot(collection(db, "users", user.uid, "readingSessions"), (snapshot) => {
-            const loaded = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                date: (doc.data().date as Timestamp).toDate()
-            }));
+            const loaded = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                const dateVal = data.date;
+                return {
+                    id: doc.id,
+                    ...data,
+                    date: dateVal?.toDate ? dateVal.toDate() : new Date(dateVal)
+                };
+            });
             setReadingRecordsState(loaded);
         });
 
         // 5. Daily Records (Mood)
         const dailyUnsub = onSnapshot(collection(db, "users", user.uid, "dailyRecords"), (snapshot) => {
-            const loaded = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const loaded = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                const dateVal = data.date;
+                return {
+                    id: doc.id,
+                    ...data,
+                    date: dateVal?.toDate ? dateVal.toDate() : new Date(dateVal)
+                };
+            });
             setDailyRecordsState(loaded);
         });
 
