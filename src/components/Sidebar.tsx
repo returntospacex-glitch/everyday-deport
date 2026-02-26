@@ -34,17 +34,21 @@ export function Sidebar() {
     const { user, logout } = useAuth();
 
     return (
-        <div className="w-72 h-screen glass border-r border-white/10 flex flex-col px-6 py-4 fixed left-0 top-0">
-            <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg shadow-accent/20">
-                    <Sparkles className="text-white w-6 h-6" />
+        <div className="w-72 h-screen bg-[#0b1121]/95 backdrop-blur-xl border-r border-white/10 flex flex-col fixed left-0 top-0 z-50">
+            {/* Logo Section */}
+            <div className="p-8 pb-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg shadow-accent/20">
+                        <Sparkles className="text-white w-6 h-6" />
+                    </div>
+                    <h1 className="text-2xl font-black text-white tracking-tighter">
+                        EveryDay
+                    </h1>
                 </div>
-                <h1 className="text-[2.7rem] font-black tracking-tighter bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
-                    EveryDay
-                </h1>
             </div>
 
-            <nav className="flex-1 space-y-3 mt-6">
+            {/* Navigation */}
+            <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -52,29 +56,30 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={twMerge(
-                                "flex items-center gap-4 px-5 py-3.5 rounded-[22px] transition-all duration-300 group",
+                                "flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all duration-300 group",
                                 isActive
-                                    ? "bg-accent/10 text-accent shadow-xl shadow-accent/5"
+                                    ? "bg-accent/10 text-accent shadow-lg shadow-accent/5"
                                     : "text-white/40 hover:bg-white/5 hover:text-white"
                             )}
                         >
-                            <item.icon className={clsx("w-7 h-7 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
-                            <span className="text-[1.15rem] font-black tracking-tight">{item.name}</span>
+                            <item.icon className={clsx("w-6 h-6 transition-transform group-hover:scale-110", isActive ? "text-accent" : "group-hover:text-white")} />
+                            <span className="text-[1.1rem] font-black tracking-tight">{item.name}</span>
                         </Link>
                     );
                 })}
             </nav>
 
+            {/* Bottom Section */}
             {user && (
-                <div className="pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+                <div className="p-6 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-4">
                     <button
                         onClick={() => logout()}
-                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
                     >
                         <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-black tracking-tight">로그아웃</span>
                     </button>
-                    <div className="flex-1 flex justify-end">
+                    <div className="flex justify-end">
                         <BackgroundMusic />
                     </div>
                 </div>

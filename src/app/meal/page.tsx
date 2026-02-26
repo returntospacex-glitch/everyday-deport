@@ -168,6 +168,33 @@ export default function MealPage() {
         return [...yesterdayMeals, ...dayMeals].sort((a, b) => a.time.localeCompare(b.time));
     }, [meals, selectedDate]);
 
+    // Auto-analyze last 5 meals when meals change
+    useEffect(() => {
+        if (!user || meals.length === 0 || !isLoaded) return;
+
+        const triggerAutoAnalyze = async () => {
+            setIsAnalyzing(true);
+            try {
+                const last5Meals = [...meals]
+                    .sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time))
+                    .slice(0, 5);
+
+                // Only analyze if there are meals to analyze
+                if (last5Meals.length > 0) {
+                    const result = await analyzeMeals(last5Meals, customInstructions);
+                    setAiInsight(result);
+                }
+            } catch (e) {
+                console.error("Auto analysis failed:", e);
+            } finally {
+                setIsAnalyzing(false);
+            }
+        };
+
+        const timer = setTimeout(triggerAutoAnalyze, 1000); // 1 second debounce
+        return () => clearTimeout(timer);
+    }, [meals.length, user, isLoaded]); // Trigger on length change or load
+
     const handleAddMeal = async () => {
         if (!newMeal.menu || !user) return;
 

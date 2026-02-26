@@ -11,61 +11,7 @@ export interface SleepRecord {
 
 // Generate mock data for the current month and previous month
 const generateMockData = (): SleepRecord[] => {
-    const today = new Date();
-    const start = addDays(today, -60);
-
-    // 2026-02-19 이후로는 랜덤 데이터 생성 중단 (사용자 요청)
-    const cutoffDate = new Date(2026, 1, 18); // Month is 0-indexed (1 = Feb)
-    const end = today < cutoffDate ? today : cutoffDate;
-
-    const days = eachDayOfInterval({ start, end });
-
-    return days.map(day => {
-        // 특정 기간 (1/22 - 2/11) 데이터 강제 설정
-        const targetStart = new Date(2026, 0, 22);
-        const targetEnd = new Date(2026, 1, 11);
-
-        let bedHour, bedMinute, wakeHour, wakeMinute;
-
-        if (day >= targetStart && day <= targetEnd) {
-            // 사용자 요청: 10:15 PM 취침
-            bedHour = 22;
-            bedMinute = 15;
-
-            // 주말(토, 일) 구분: getDay() 0:일, 6:토
-            const isWeekend = day.getDay() === 0 || day.getDay() === 6;
-            if (isWeekend) {
-                wakeHour = 7;
-                wakeMinute = 0;
-            } else {
-                wakeHour = 6;
-                wakeMinute = 0;
-            }
-        } else {
-            // 그 외 기간은 기존처럼 랜덤 생성
-            bedHour = 22 + Math.floor(Math.random() * 3); // 22, 23, 24 (0)
-            bedMinute = Math.floor(Math.random() * 60);
-            wakeHour = 6 + Math.floor(Math.random() * 3); // 6, 7, 8
-            wakeMinute = Math.floor(Math.random() * 60);
-        }
-
-        const bedTime = new Date(day);
-        bedTime.setHours(bedHour, bedMinute);
-
-        const wakeTime = addDays(new Date(day), 1);
-        wakeTime.setHours(wakeHour, wakeMinute);
-
-        const duration = (wakeTime.getTime() - bedTime.getTime()) / (1000 * 60 * 60);
-        const quality = duration > 7.5 ? 4 : duration > 6.5 ? 3 : duration > 5.5 ? 2 : 1;
-
-        return {
-            date: day,
-            bedTime,
-            wakeTime,
-            quality: quality as 1 | 2 | 3 | 4,
-            duration: Number(duration.toFixed(1))
-        };
-    });
+    return [];
 };
 
 export const sleepRecords: SleepRecord[] = generateMockData();
