@@ -48,7 +48,7 @@ export function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-5 flex flex-col overflow-hidden">
+            <nav className="flex-1 px-5 flex flex-col overflow-hidden pb-4">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -68,22 +68,6 @@ export function Sidebar() {
                     );
                 })}
             </nav>
-
-            {/* Bottom Section */}
-            {user && (
-                <div className="p-8 py-10 border-t border-white/5 bg-white/[0.02] flex items-center justify-between gap-6 shrink-0 mt-auto">
-                    <button
-                        onClick={() => logout()}
-                        className="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-white/30 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
-                    >
-                        <LogOut className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-black tracking-tight">로그아웃</span>
-                    </button>
-                    <div className="flex justify-end">
-                        <BackgroundMusic />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
