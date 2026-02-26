@@ -59,18 +59,19 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
                 .map(doc => ({ ...doc.data(), id: doc.id }))
                 .find((r: any) => {
                     if (!r.date) return false;
-                    const d = r.date instanceof Timestamp ? r.date.toDate() : new Date(r.date);
+                    const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
                     return isSameDay(d, currentTargetDate);
                 });
 
             if (foundSleep) {
                 const sleepData = foundSleep as any;
+                // Field Mapping: Firestore fields are bedtime, wakeUp, hoursSlept
                 setRecord({
                     ...sleepData,
-                    date: sleepData.date instanceof Timestamp ? sleepData.date.toDate() : new Date(sleepData.date),
-                    bedTime: sleepData.bedTime instanceof Timestamp ? sleepData.bedTime.toDate() : new Date(sleepData.bedTime),
-                    wakeTime: sleepData.wakeTime instanceof Timestamp ? sleepData.wakeTime.toDate() : new Date(sleepData.wakeTime),
-                    duration: sleepData.hoursSlept || sleepData.duration || 0
+                    date: sleepData.date?.toDate ? sleepData.date.toDate() : new Date(sleepData.date),
+                    bedTime: sleepData.bedtime?.toDate ? sleepData.bedtime.toDate() : (sleepData.bedTime ? new Date(sleepData.bedTime) : new Date()),
+                    wakeTime: sleepData.wakeUp?.toDate ? sleepData.wakeUp.toDate() : (sleepData.wakeTime ? new Date(sleepData.wakeTime) : new Date()),
+                    duration: Number(sleepData.hoursSlept || sleepData.duration || 0)
                 });
             } else {
                 setRecord(getSleepRecord(currentTargetDate));
@@ -81,12 +82,16 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
         const exerciseUnsub = onSnapshot(collection(db, "users", user.uid, "exercises"), (snapshot) => {
             const allExercises = snapshot.docs.map(doc => {
                 const data = doc.data() as any;
+                let d;
+                if (data.date?.toDate) d = data.date.toDate();
+                else d = new Date(data.date);
+
                 return {
                     id: doc.id,
                     ...data,
-                    date: data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date)
+                    date: d
                 };
-            }) as ExerciseRecord[];
+            }).filter(ex => ex.date && !isNaN(ex.date.getTime())) as ExerciseRecord[];
 
             const dayExercises = allExercises.filter(r => isSameDay(r.date, currentTargetDate));
             setDailyExercises(dayExercises);
@@ -121,7 +126,11 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
         const mealUnsub = onSnapshot(collection(db, "users", user.uid, "meals"), (snapshot) => {
             const dayMeals = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter((m: any) => m.date === dateStr);
+                .filter((m: any) => {
+                    if (typeof m.date === 'string') return m.date === dateStr;
+                    const d = m.date?.toDate ? m.date.toDate() : new Date(m.date);
+                    return d && !isNaN(d.getTime()) && format(d, 'yyyy-MM-dd') === dateStr;
+                });
             setDailyMeals(dayMeals);
         });
 
@@ -130,7 +139,8 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
             const dayReading = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() }))
                 .filter((r: any) => {
-                    const sessionDate = (r.date as Timestamp).toDate();
+                    if (!r.date) return false;
+                    const sessionDate = r.date?.toDate ? r.date.toDate() : new Date(r.date);
                     return isSameDay(sessionDate, currentTargetDate);
                 });
             setDailyReading(dayReading);
@@ -140,7 +150,11 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
         const diaryUnsub = onSnapshot(collection(db, "users", user.uid, "dailyRecords"), (snapshot) => {
             const dayDiary = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() }))
-                .find((r: any) => r.date === dateStr);
+                .find((r: any) => {
+                    if (typeof r.date === 'string') return r.date === dateStr;
+                    const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+                    return d && !isNaN(d.getTime()) && format(d, 'yyyy-MM-dd') === dateStr;
+                });
             setDailyDiary(dayDiary);
         });
 
@@ -226,7 +240,9 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
                                             <span className="text-xs font-bold uppercase tracking-wider">취침 시간</span>
                                         </div>
                                         <div className="text-2xl font-black text-white">
-                                            {format(new Date(sleepRecord.bedTime), 'a hh:mm', { locale: ko })}
+                                            {sleepRecord.bedTime && !isNaN(new Date(sleepRecord.bedTime).getTime())
+                                                ? format(new Date(sleepRecord.bedTime), 'a hh:mm', { locale: ko })
+                                                : '--:--'}
                                         </div>
                                     </div>
                                     <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
@@ -235,7 +251,9 @@ export default function CalendarDetailPage({ params }: { params: Promise<{ date:
                                             <span className="text-xs font-bold uppercase tracking-wider">기상 시간</span>
                                         </div>
                                         <div className="text-2xl font-black text-white">
-                                            {format(new Date(sleepRecord.wakeTime), 'a hh:mm', { locale: ko })}
+                                            {sleepRecord.wakeTime && !isNaN(new Date(sleepRecord.wakeTime).getTime())
+                                                ? format(new Date(sleepRecord.wakeTime), 'a hh:mm', { locale: ko })
+                                                : '--:--'}
                                         </div>
                                     </div>
                                 </div>

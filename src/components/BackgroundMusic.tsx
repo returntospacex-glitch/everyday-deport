@@ -82,7 +82,7 @@ export function BackgroundMusic() {
     return (
         <div className="flex items-center gap-1">
             {!hasInteracted && (
-                <div className="fixed bottom-24 left-6 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] text-white/50 animate-bounce border border-white/10 z-50">
+                <div className="fixed top-20 right-8 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] text-white/50 animate-bounce border border-white/10 z-50">
                     클릭하면 재즈가 시작됩니다 🎷
                 </div>
             )}
