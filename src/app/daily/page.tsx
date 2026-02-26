@@ -221,20 +221,30 @@ export default function DailyPage() {
                             <h2 className="text-xl font-black text-white tracking-tight uppercase">오늘의 기분 점수</h2>
                         </div>
                         <div className="flex justify-between items-center px-4">
-                            {[1, 2, 3, 4, 5].map((s) => (
+                            {[
+                                { s: 1, label: "우울", emoji: "😢", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+                                { s: 2, label: "그저 그럼", emoji: "😐", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
+                                { s: 3, label: "보통", emoji: "😊", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+                                { s: 4, label: "좋음", emoji: "✨", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+                                { s: 5, label: "최고", emoji: "🤩", color: "bg-yellow-400 text-black border-yellow-400 shadow-lg shadow-yellow-400/20" }
+                            ].map((item) => (
                                 <button
-                                    key={s}
-                                    onClick={() => setMoodScore(s)}
-                                    className="group relative flex flex-col items-center gap-2"
+                                    key={item.s}
+                                    onClick={() => setMoodScore(item.s)}
+                                    className="group relative flex flex-col items-center gap-3"
                                 >
                                     <div className={`
-                                        w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300
-                                        ${moodScore >= s ? 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/20' : 'bg-white/5 text-white/20 hover:bg-white/10'}
+                                        w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 border
+                                        ${moodScore === item.s
+                                            ? item.color
+                                            : 'bg-white/5 text-white/20 border-white/5 hover:bg-white/10 hover:border-white/10 hover:scale-105 active:scale-95'}
                                     `}>
-                                        <Star className={`w-7 h-7 ${moodScore >= s ? 'fill-current' : ''}`} />
+                                        <span className={`text-2xl transition-transform duration-300 ${moodScore === item.s ? 'scale-125' : 'grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100'}`}>
+                                            {item.emoji}
+                                        </span>
                                     </div>
-                                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${moodScore === s ? 'text-yellow-400' : 'text-white/20'}`}>
-                                        Level {s}
+                                    <span className={`text-[11px] font-black tracking-tight transition-colors duration-300 ${moodScore === item.s ? 'text-white' : 'text-white/20 uppercase'}`}>
+                                        {item.label}
                                     </span>
                                 </button>
                             ))}

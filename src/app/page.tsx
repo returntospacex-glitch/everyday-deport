@@ -553,491 +553,491 @@ export default function Dashboard() {
                         <Plus className="w-4 h-4" />
                         할 일 추가
                     </button>
-                </div>
 
-                {/* Routine List Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filteredRoutines.length === 0 ? (
-                        <div className="md:col-span-2 h-64 flex flex-col items-center justify-center text-white/20 border-2 border-dashed border-white/5 rounded-3xl">
-                            <p className="text-lg">해당 카테고리의 루틴이 없어요</p>
-                            <p className="text-sm mt-1">새로운 루틴을 등록하고 하루를 시작해보세요!</p>
-                        </div>
-                    ) : (
-                        filteredRoutines.map((routine, idx) => (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.05 }}
-                                key={routine.id}
-                                className={`group glass p-5 flex items-center justify-between hover:border-accent/30 transition-all cursor-pointer ${routine.completed ? "opacity-40" : ""}`}
-                            >
-                                <div className="flex items-center gap-4 overflow-hidden flex-1" onClick={() => openEditModal(routine)}>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleComplete(routine.id);
-                                        }}
-                                        className={`shrink-0 transition-colors ${routine.completed ? "text-accent" : "text-white/20 hover:text-accent"}`}
-                                    >
-                                        {routine.completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
-                                    </button>
-                                    <div className="truncate">
-                                        <h3 className={`font-bold text-lg truncate ${routine.completed ? "line-through text-white/40" : ""}`}>{routine.title}</h3>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span
-                                                className="text-[10px] px-1.5 py-0.5 rounded font-bold"
-                                                style={{
-                                                    backgroundColor: `${categories.find(c => c.name === routine.category)?.color || '#ffffff'}20`,
-                                                    color: categories.find(c => c.name === routine.category)?.color || '#ffffff'
-                                                }}
-                                            >
-                                                {routine.category}
-                                            </span>
-                                            {routine.time && (
-                                                <span className="flex items-center gap-1 text-[10px] text-white/40 font-bold">
-                                                    <Clock className="w-2.5 h-2.5" /> {routine.time}
+                    {/* Routine List Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {filteredRoutines.length === 0 ? (
+                            <div className="md:col-span-2 h-64 flex flex-col items-center justify-center text-white/20 border-2 border-dashed border-white/5 rounded-3xl">
+                                <p className="text-lg">해당 카테고리의 루틴이 없어요</p>
+                                <p className="text-sm mt-1">새로운 루틴을 등록하고 하루를 시작해보세요!</p>
+                            </div>
+                        ) : (
+                            filteredRoutines.map((routine, idx) => (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    key={routine.id}
+                                    className={`group glass p-5 flex items-center justify-between hover:border-accent/30 transition-all cursor-pointer ${routine.completed ? "opacity-40" : ""}`}
+                                >
+                                    <div className="flex items-center gap-4 overflow-hidden flex-1" onClick={() => openEditModal(routine)}>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleComplete(routine.id);
+                                            }}
+                                            className={`shrink-0 transition-colors ${routine.completed ? "text-accent" : "text-white/20 hover:text-accent"}`}
+                                        >
+                                            {routine.completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
+                                        </button>
+                                        <div className="truncate">
+                                            <h3 className={`font-bold text-lg truncate ${routine.completed ? "line-through text-white/40" : ""}`}>{routine.title}</h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span
+                                                    className="text-[10px] px-1.5 py-0.5 rounded font-bold"
+                                                    style={{
+                                                        backgroundColor: `${categories.find(c => c.name === routine.category)?.color || '#ffffff'}20`,
+                                                        color: categories.find(c => c.name === routine.category)?.color || '#ffffff'
+                                                    }}
+                                                >
+                                                    {routine.category}
                                                 </span>
-                                            )}
-                                            {routine.isRecurring && (
-                                                <RotateCcw className="w-2.5 h-2.5 text-accent/60" />
-                                            )}
+                                                {routine.time && (
+                                                    <span className="flex items-center gap-1 text-[10px] text-white/40 font-bold">
+                                                        <Clock className="w-2.5 h-2.5" /> {routine.time}
+                                                    </span>
+                                                )}
+                                                {routine.isRecurring && (
+                                                    <RotateCcw className="w-2.5 h-2.5 text-accent/60" />
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <button
-                                    onClick={() => openEditModal(routine)}
-                                    className="opacity-0 group-hover:opacity-100 p-2 text-white/20 hover:text-white transition-all"
-                                >
-                                    <MoreVertical className="w-4 h-4" />
-                                </button>
-                            </motion.div>
-                        ))
-                    )}
-                </div>
-            </div>
-
-            {/* [RIGHT] Summary Side Panel */}
-            <aside className="w-full xl:w-[350px] space-y-4">
-                <div className="glass p-6 space-y-4 border-accent/20">
-                    <h4 className="text-base font-bold text-white/80 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-accent" />
-                        오늘의 진행도
-                    </h4>
-                    <div className="space-y-2">
-                        <div className="flex justify-between text-xs mb-1">
-                            <span className="text-white/40">달성률</span>
-                            <span className="text-accent font-bold">
-                                {Math.round((routines.filter(r => r.completed).length / routines.length) * 100 || 0)}%
-                            </span>
-                        </div>
-                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${(routines.filter(r => r.completed).length / routines.length) * 100 || 0}%` }}
-                                className="h-full bg-accent"
-                            />
-                        </div>
-                    </div>
-                    <p className="text-[11px] text-white/30 leading-relaxed">
-                        오늘 총 {routines.length}개의 할 일이 있습니다. {routines.filter(r => !r.completed).length}개가 더 남았어요!
-                    </p>
-                </div>
-
-                <GoogleCalendarWidget selectedDate={selectedDate} />
-
-                <div className="glass p-6 space-y-4">
-                    <h4 className="text-base font-bold text-white/80">EveryDay Tip</h4>
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-sm text-white/80 leading-relaxed">
-                        "작은 습관이 모여 위대한 변화를 만듭니다. 오늘 수면 패턴은 어떠셨나요?"
+                                    <button
+                                        onClick={() => openEditModal(routine)}
+                                        className="opacity-0 group-hover:opacity-100 p-2 text-white/20 hover:text-white transition-all"
+                                    >
+                                        <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                </motion.div>
+                            ))
+                        )}
                     </div>
                 </div>
-            </aside>
-        </div>
 
-            {/* Add Routine Modal */ }
-    <AnimatePresence>
-        {
-            isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsModalOpen(false)}
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                    />
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-lg glass p-8 space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar"
-                    >
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">{editingRoutine ? "할 일 수정" : "새로운 할 일"}</h2>
-                            <button
-                                onClick={() => {
-                                    setIsModalOpen(false);
-                                    setEditingRoutine(null);
-                                    resetNewRoutine();
-                                }}
-                                className="text-white/40 hover:text-white"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <div className="space-y-6">
-                            {/* Title Input */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-white/40">루틴 이름</label>
-                                <input
-                                    type="text"
-                                    placeholder="어떤 일을 하실 건가요?"
-                                    value={newRoutine.title}
-                                    onFocus={(e) => e.target.select()}
-                                    onChange={(e) => setNewRoutine(prev => ({ ...prev, title: e.target.value }))}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:outline-none focus:border-accent transition-all text-lg font-medium"
+                {/* [RIGHT] Summary Side Panel */}
+                <aside className="w-full xl:w-[350px] space-y-4">
+                    <div className="glass p-6 space-y-4 border-accent/20">
+                        <h4 className="text-base font-bold text-white/80 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-accent" />
+                            오늘의 진행도
+                        </h4>
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-xs mb-1">
+                                <span className="text-white/40">달성률</span>
+                                <span className="text-accent font-bold">
+                                    {Math.round((routines.filter(r => r.completed).length / routines.length) * 100 || 0)}%
+                                </span>
+                            </div>
+                            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${(routines.filter(r => r.completed).length / routines.length) * 100 || 0}%` }}
+                                    className="h-full bg-accent"
                                 />
                             </div>
+                        </div>
+                        <p className="text-[11px] text-white/30 leading-relaxed">
+                            오늘 총 {routines.length}개의 할 일이 있습니다. {routines.filter(r => !r.completed).length}개가 더 남았어요!
+                        </p>
+                    </div>
 
-                            {/* Custom Time Input (UX Enhanced) */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-white/40 flex items-center gap-2">
-                                    <Clock className="w-4 h-4" /> 수행 시간
-                                </label>
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        onClick={() => modalHRef.current?.focus()}
-                                        className="flex-1 flex items-center bg-white/5 border border-white/10 rounded-2xl p-2.5 focus-within:border-accent transition-all cursor-text"
-                                    >
-                                        <input
-                                            ref={modalHRef}
-                                            type="text"
-                                            inputMode="numeric"
-                                            value={newRoutine.h}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onFocus={(e) => e.target.select()}
-                                            onBlur={(e) => handleTimeBlur('h', e.target.value)}
-                                            onChange={(e) => handleHChange(e.target.value)}
-                                            className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
-                                            placeholder="09"
-                                        />
-                                        <span className="text-white/20 font-bold text-xl px-1" onClick={(e) => e.stopPropagation()}>:</span>
-                                        <input
-                                            ref={modalMRef}
-                                            type="text"
-                                            inputMode="numeric"
-                                            value={newRoutine.m}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onFocus={(e) => e.target.select()}
-                                            onBlur={(e) => handleTimeBlur('m', e.target.value)}
-                                            onChange={(e) => {
-                                                const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
-                                                setNewRoutine(prev => ({ ...prev, m: val }));
-                                            }}
-                                            className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
-                                            placeholder="00"
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={() => setNewRoutine(prev => ({ ...prev, ampm: prev.ampm === "AM" ? "PM" : "AM" }))}
-                                        className="w-20 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-bold text-accent hover:bg-white/10 transition-all active:scale-95 text-xl"
-                                    >
-                                        {newRoutine.ampm}
-                                    </button>
-                                </div>
+                    <GoogleCalendarWidget selectedDate={selectedDate} />
+
+                    <div className="glass p-6 space-y-4">
+                        <h4 className="text-base font-bold text-white/80">EveryDay Tip</h4>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-sm text-white/80 leading-relaxed">
+                            "작은 습관이 모여 위대한 변화를 만듭니다. 오늘 수면 패턴은 어떠셨나요?"
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            {/* Routine Add/Edit Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => {
+                                setIsModalOpen(false);
+                                setEditingRoutine(null);
+                                resetNewRoutine();
+                            }}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-lg glass p-8 space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold">{editingRoutine ? "할 일 수정" : "새로운 할 일"}</h2>
+                                <button
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setEditingRoutine(null);
+                                        resetNewRoutine();
+                                    }}
+                                    className="text-white/40 hover:text-white"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
                             </div>
 
-                            <div className="space-y-3">
-                                <label className="text-sm font-bold text-white/40 ml-1">카테고리</label>
-                                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-1">
-                                    {categories.map(cat => (
-                                        <button
-                                            key={cat.name}
-                                            type="button"
-                                            onClick={() => setNewRoutine(prev => ({ ...prev, category: cat.name }))}
-                                            style={{
-                                                backgroundColor: newRoutine.category === cat.name ? cat.color : undefined,
-                                                borderColor: newRoutine.category === cat.name ? cat.color : `${cat.color}20`,
-                                                boxShadow: newRoutine.category === cat.name ? `0 10px 15px -3px ${cat.color}40` : undefined,
-                                                color: newRoutine.category === cat.name ? '#000000' : `${cat.color}60`
-                                            }}
-                                            className={`
-                                                        px-5 py-2.5 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border
-                                                        ${newRoutine.category === cat.name
-                                                    ? ""
-                                                    : "bg-white/5"}
-                                                    `}
+                            <div className="space-y-6">
+                                {/* Title Input */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-white/40">루틴 이름</label>
+                                    <input
+                                        type="text"
+                                        placeholder="어떤 일을 하실 건가요?"
+                                        value={newRoutine.title}
+                                        onFocus={(e) => e.target.select()}
+                                        onChange={(e) => setNewRoutine(prev => ({ ...prev, title: e.target.value }))}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:outline-none focus:border-accent transition-all text-lg font-medium"
+                                    />
+                                </div>
+
+                                {/* Custom Time Input (UX Enhanced) */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-white/40 flex items-center gap-2">
+                                        <Clock className="w-4 h-4" /> 수행 시간
+                                    </label>
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            onClick={() => modalHRef.current?.focus()}
+                                            className="flex-1 flex items-center bg-white/5 border border-white/10 rounded-2xl p-2.5 focus-within:border-accent transition-all cursor-text"
                                         >
-                                            {cat.name}
+                                            <input
+                                                ref={modalHRef}
+                                                type="text"
+                                                inputMode="numeric"
+                                                value={newRoutine.h}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onFocus={(e) => e.target.select()}
+                                                onBlur={(e) => handleTimeBlur('h', e.target.value)}
+                                                onChange={(e) => handleHChange(e.target.value)}
+                                                className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
+                                                placeholder="09"
+                                            />
+                                            <span className="text-white/20 font-bold text-xl px-1" onClick={(e) => e.stopPropagation()}>:</span>
+                                            <input
+                                                ref={modalMRef}
+                                                type="text"
+                                                inputMode="numeric"
+                                                value={newRoutine.m}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onFocus={(e) => e.target.select()}
+                                                onBlur={(e) => handleTimeBlur('m', e.target.value)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                                                    setNewRoutine(prev => ({ ...prev, m: val }));
+                                                }}
+                                                className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
+                                                placeholder="00"
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={() => setNewRoutine(prev => ({ ...prev, ampm: prev.ampm === "AM" ? "PM" : "AM" }))}
+                                            className="w-20 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-bold text-accent hover:bg-white/10 transition-all active:scale-95 text-xl"
+                                        >
+                                            {newRoutine.ampm}
                                         </button>
-                                    ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="space-y-3">
-                                <label className="text-sm font-bold text-white/40 ml-1">구분</label>
-                                <div className="flex p-1.5 bg-white/5 rounded-2xl border border-white/10">
-                                    <button
-                                        onClick={() => setNewRoutine(prev => ({ ...prev, isRecurring: false }))}
-                                        className={`flex-1 py-3 rounded-xl text-sm font-black transition-all ${!newRoutine.isRecurring ? "bg-white text-black shadow-lg" : "text-white/40 hover:text-white"}`}
-                                    >
-                                        일회성
-                                    </button>
-                                    <button
-                                        onClick={() => setNewRoutine(prev => ({ ...prev, isRecurring: true }))}
-                                        className={`flex-1 py-3 rounded-xl text-sm font-black transition-all ${newRoutine.isRecurring ? "bg-accent text-white shadow-lg" : "text-white/40 hover:text-white"}`}
-                                    >
-                                        반복 설정
-                                    </button>
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-white/40 ml-1">카테고리</label>
+                                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-1">
+                                        {categories.map(cat => (
+                                            <button
+                                                key={cat.name}
+                                                type="button"
+                                                onClick={() => setNewRoutine(prev => ({ ...prev, category: cat.name }))}
+                                                style={{
+                                                    backgroundColor: newRoutine.category === cat.name ? cat.color : undefined,
+                                                    borderColor: newRoutine.category === cat.name ? cat.color : `${cat.color}20`,
+                                                    boxShadow: newRoutine.category === cat.name ? `0 10px 15px -3px ${cat.color}40` : undefined,
+                                                    color: newRoutine.category === cat.name ? '#000000' : `${cat.color}60`
+                                                }}
+                                                className={`
+                                                    px-5 py-2.5 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border
+                                                    ${newRoutine.category === cat.name ? "" : "bg-white/5"}
+                                                `}
+                                            >
+                                                {cat.name}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Recurring Options */}
-                            <AnimatePresence>
-                                {newRoutine.isRecurring && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="space-y-4 overflow-hidden pt-2"
-                                    >
-                                        <div className="p-5 bg-accent/5 rounded-2xl border border-accent/20 space-y-6">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-sm font-bold text-accent flex items-center gap-2">
-                                                    <RotateCcw className="w-4 h-4" /> 반복 설정
-                                                </span>
-                                            </div>
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-white/40 ml-1">구분</label>
+                                    <div className="flex p-1.5 bg-white/5 rounded-2xl border border-white/10">
+                                        <button
+                                            onClick={() => setNewRoutine(prev => ({ ...prev, isRecurring: false }))}
+                                            className={`flex-1 py-3 rounded-xl text-sm font-black transition-all ${!newRoutine.isRecurring ? "bg-white text-black shadow-lg" : "text-white/40 hover:text-white"}`}
+                                        >
+                                            일회성
+                                        </button>
+                                        <button
+                                            onClick={() => setNewRoutine(prev => ({ ...prev, isRecurring: true }))}
+                                            className={`flex-1 py-3 rounded-xl text-sm font-black transition-all ${newRoutine.isRecurring ? "bg-accent text-white shadow-lg" : "text-white/40 hover:text-white"}`}
+                                        >
+                                            반복 설정
+                                        </button>
+                                    </div>
+                                </div>
 
-                                            {/* Main Repeat Type Selection */}
-                                            <div className="grid grid-cols-3 gap-2">
-                                                {['daily', 'weekly', 'monthly'].map((type) => (
-                                                    <button
-                                                        key={type}
-                                                        onClick={() => setNewRoutine(prev => ({ ...prev, repeatType: type }))}
-                                                        className={`py-2.5 rounded-xl text-xs font-black transition-all border ${newRoutine.repeatType === type ? "bg-accent text-white border-accent shadow-md shadow-accent/20" : "bg-white/5 border-white/5 text-white/40"}`}
-                                                    >
-                                                        {type === 'daily' ? '매일' : type === 'weekly' ? '매주' : '매월'}
-                                                    </button>
-                                                ))}
-                                            </div>
-
-                                            {/* [DAILY OPTIONS] */}
-                                            {newRoutine.repeatType === 'daily' && (
-                                                <div className="space-y-3 pt-2">
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        {['all', 'weekday', 'weekend', 'custom'].map((dType) => (
-                                                            <button
-                                                                key={dType}
-                                                                onClick={() => setNewRoutine(prev => ({ ...prev, dailyType: dType }))}
-                                                                className={`py-2 rounded-xl text-[11px] font-bold transition-all border ${newRoutine.dailyType === dType ? "bg-white/10 border-white/20 text-white" : "border-white/5 text-white/30"}`}
-                                                            >
-                                                                {dType === 'all' ? '매일 반복' : dType === 'weekday' ? '평일만' : dType === 'weekend' ? '주말만' : '일수 간격'}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                    {newRoutine.dailyType === 'custom' && (
-                                                        <div className="flex items-center gap-3 px-1">
-                                                            <span className="text-xs text-white/40">간격 :</span>
-                                                            <input
-                                                                type="number"
-                                                                value={newRoutine.customInterval}
-                                                                onChange={(e) => setNewRoutine(prev => ({ ...prev, customInterval: e.target.value }))}
-                                                                className="w-16 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-center font-bold text-sm focus:outline-none focus:border-accent"
-                                                            />
-                                                            <span className="text-xs text-white/40">일마다</span>
-                                                        </div>
-                                                    )}
+                                {/* Recurring Options */}
+                                <AnimatePresence>
+                                    {newRoutine.isRecurring && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="space-y-4 overflow-hidden pt-2"
+                                        >
+                                            <div className="p-5 bg-accent/5 rounded-2xl border border-accent/20 space-y-6">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-bold text-accent flex items-center gap-2">
+                                                        <RotateCcw className="w-4 h-4" /> 반복 설정
+                                                    </span>
                                                 </div>
-                                            )}
 
-                                            {/* [WEEKLY OPTIONS] */}
-                                            {newRoutine.repeatType === 'weekly' && (
-                                                <div className="space-y-4 pt-2">
-                                                    <div className="flex items-center gap-3 px-1">
-                                                        <span className="text-xs text-white/40 shrink-0">간격 :</span>
-                                                        <div className="flex-1 flex items-center bg-white/5 rounded-xl overflow-hidden border border-white/10 p-0.5">
-                                                            {[1, 2, 3, 4].map(num => (
+                                                {/* Main Repeat Type Selection */}
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {['daily', 'weekly', 'monthly'].map((type) => (
+                                                        <button
+                                                            key={type}
+                                                            onClick={() => setNewRoutine(prev => ({ ...prev, repeatType: type }))}
+                                                            className={`py-2.5 rounded-xl text-xs font-black transition-all border ${newRoutine.repeatType === type ? "bg-accent text-white border-accent shadow-md shadow-accent/20" : "bg-white/5 border-white/5 text-white/40"}`}
+                                                        >
+                                                            {type === 'daily' ? '매일' : type === 'weekly' ? '매주' : '매월'}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                {/* [DAILY OPTIONS] */}
+                                                {newRoutine.repeatType === 'daily' && (
+                                                    <div className="space-y-3 pt-2">
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            {['all', 'weekday', 'weekend', 'custom'].map((dType) => (
                                                                 <button
-                                                                    key={num}
-                                                                    onClick={() => setNewRoutine(prev => ({ ...prev, repeatInterval: num.toString() }))}
-                                                                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${newRoutine.repeatInterval === num.toString() ? "bg-white/10 text-white shadow-sm" : "text-white/20 hover:text-white/40"}`}
+                                                                    key={dType}
+                                                                    onClick={() => setNewRoutine(prev => ({ ...prev, dailyType: dType }))}
+                                                                    className={`py-2 rounded-xl text-[11px] font-bold transition-all border ${newRoutine.dailyType === dType ? "bg-white/10 border-white/20 text-white" : "border-white/5 text-white/30"}`}
                                                                 >
-                                                                    {num}주
+                                                                    {dType === 'all' ? '매일 반복' : dType === 'weekday' ? '평일만' : dType === 'weekend' ? '주말만' : '일수 간격'}
                                                                 </button>
                                                             ))}
                                                         </div>
+                                                        {newRoutine.dailyType === 'custom' && (
+                                                            <div className="flex items-center gap-3 px-1">
+                                                                <span className="text-xs text-white/40">간격 :</span>
+                                                                <input
+                                                                    type="number"
+                                                                    value={newRoutine.customInterval}
+                                                                    onChange={(e) => setNewRoutine(prev => ({ ...prev, customInterval: e.target.value }))}
+                                                                    className="w-16 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-center font-bold text-sm focus:outline-none focus:border-accent"
+                                                                />
+                                                                <span className="text-xs text-white/40">일마다</span>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <div className="grid grid-cols-7 gap-1">
-                                                        {['월', '화', '수', '목', '금', '토', '일'].map((day, idx) => {
-                                                            const dayVal = idx === 6 ? 0 : idx + 1;
-                                                            const isSelected = newRoutine.selectedDays.includes(dayVal);
-                                                            return (
-                                                                <button
-                                                                    key={day}
-                                                                    onClick={() => {
-                                                                        setNewRoutine(prev => {
-                                                                            const exists = prev.selectedDays.includes(dayVal);
-                                                                            if (exists) {
-                                                                                return { ...prev, selectedDays: prev.selectedDays.filter(d => d !== dayVal) };
-                                                                            }
-                                                                            return { ...prev, selectedDays: [...prev.selectedDays, dayVal].sort() };
-                                                                        });
-                                                                    }}
-                                                                    className={`aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold transition-all border ${isSelected ? "bg-accent/20 border-accent/40 text-accent" : "bg-white/5 border-white/5 text-white/20"}`}
-                                                                >
-                                                                    {day}
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                            )}
+                                                )}
 
-                                            {/* [MONTHLY OPTIONS] */}
-                                            {newRoutine.repeatType === 'monthly' && (
-                                                <div className="space-y-4 pt-2">
-                                                    <div className="flex items-center gap-3 px-1">
-                                                        <span className="text-sm text-white/40 font-bold shrink-0">매월 :</span>
-                                                        <div className="flex-1 flex items-center bg-white/5 rounded-2xl border border-white/10 p-1.5 focus-within:border-accent group">
-                                                            <input
-                                                                type="number"
-                                                                min="1"
-                                                                max="31"
-                                                                value={newRoutine.monthlyDay}
-                                                                onChange={(e) => setNewRoutine(prev => ({ ...prev, monthlyDay: e.target.value }))}
-                                                                className="flex-1 bg-transparent text-center font-black text-xl text-white outline-none w-16"
-                                                            />
-                                                            <span className="text-sm text-white/40 font-bold pr-2 group-focus-within:text-accent">일에 반복</span>
+                                                {/* [WEEKLY OPTIONS] */}
+                                                {newRoutine.repeatType === 'weekly' && (
+                                                    <div className="space-y-4 pt-2">
+                                                        <div className="flex items-center gap-3 px-1">
+                                                            <span className="text-xs text-white/40 shrink-0">간격 :</span>
+                                                            <div className="flex-1 flex items-center bg-white/5 rounded-xl overflow-hidden border border-white/10 p-0.5">
+                                                                {[1, 2, 3, 4].map(num => (
+                                                                    <button
+                                                                        key={num}
+                                                                        onClick={() => setNewRoutine(prev => ({ ...prev, repeatInterval: num.toString() }))}
+                                                                        className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${newRoutine.repeatInterval === num.toString() ? "bg-white/10 text-white shadow-sm" : "text-white/20 hover:text-white/40"}`}
+                                                                    >
+                                                                        {num}주
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-7 gap-1">
+                                                            {['월', '화', '수', '목', '금', '토', '일'].map((day, idx) => {
+                                                                const dayVal = idx === 6 ? 0 : idx + 1;
+                                                                const isSelected = newRoutine.selectedDays.includes(dayVal);
+                                                                return (
+                                                                    <button
+                                                                        key={day}
+                                                                        onClick={() => {
+                                                                            setNewRoutine(prev => {
+                                                                                const exists = prev.selectedDays.includes(dayVal);
+                                                                                if (exists) {
+                                                                                    return { ...prev, selectedDays: prev.selectedDays.filter(d => d !== dayVal) };
+                                                                                }
+                                                                                return { ...prev, selectedDays: [...prev.selectedDays, dayVal].sort() };
+                                                                            });
+                                                                        }}
+                                                                        className={`aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold transition-all border ${isSelected ? "bg-accent/20 border-accent/40 text-accent" : "bg-white/5 border-white/5 text-white/20"}`}
+                                                                    >
+                                                                        {day}
+                                                                    </button>
+                                                                );
+                                                            })}
                                                         </div>
                                                     </div>
-                                                    <div className="bg-purple-500/10 rounded-xl p-3 border border-purple-500/20">
-                                                        <p className="text-[10px] text-purple-300 font-bold leading-relaxed flex items-center gap-1.5">
-                                                            <Sparkles className="w-3 h-3" />
-                                                            31일이 없는 달의 경우 해당 달의 마지막 날에 기록됩니다.
-                                                        </p>
+                                                )}
+
+                                                {/* [MONTHLY OPTIONS] */}
+                                                {newRoutine.repeatType === 'monthly' && (
+                                                    <div className="space-y-4 pt-2">
+                                                        <div className="flex items-center gap-3 px-1">
+                                                            <span className="text-sm text-white/40 font-bold shrink-0">매월 :</span>
+                                                            <div className="flex-1 flex items-center bg-white/5 rounded-2xl border border-white/10 p-1.5 focus-within:border-accent group">
+                                                                <input
+                                                                    type="number"
+                                                                    min="1"
+                                                                    max="31"
+                                                                    value={newRoutine.monthlyDay}
+                                                                    onChange={(e) => setNewRoutine(prev => ({ ...prev, monthlyDay: e.target.value }))}
+                                                                    className="flex-1 bg-transparent text-center font-black text-xl text-white outline-none w-16"
+                                                                />
+                                                                <span className="text-sm text-white/40 font-bold pr-2 group-focus-within:text-accent">일에 반복</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="bg-purple-500/10 rounded-xl p-3 border border-purple-500/20">
+                                                            <p className="text-[10px] text-purple-300 font-bold leading-relaxed flex items-center gap-1.5">
+                                                                <Sparkles className="w-3 h-3" />
+                                                                31일이 없는 달의 경우 해당 달의 마지막 날에 기록됩니다.
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </motion.div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-6 border-t border-white/5">
+                                {editingRoutine && (
+                                    <button
+                                        onClick={() => handleDeleteRoutine(editingRoutine.id)}
+                                        className="px-6 py-4 bg-red-500/10 text-red-500 font-bold rounded-2xl hover:bg-red-500/20 transition-all active:scale-95 flex items-center gap-2"
+                                    >
+                                        <X className="w-4 h-4" />
+                                        <span>삭제</span>
+                                    </button>
                                 )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3 pt-6 border-t border-white/5">
-                            {editingRoutine && (
                                 <button
-                                    onClick={() => handleDeleteRoutine(editingRoutine.id)}
-                                    className="px-6 py-4 bg-red-500/10 text-red-500 font-bold rounded-2xl hover:bg-red-500/20 transition-all active:scale-95 flex items-center gap-2"
+                                    onClick={handleAddRoutine}
+                                    className={`py-4 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm uppercase tracking-widest flex-1 bg-accent text-white hover:bg-accent/80`}
                                 >
-                                    <X className="w-4 h-4" />
-                                    <span>삭제</span>
+                                    {editingRoutine ? "수정 완료" : "루틴 추가하기"}
                                 </button>
-                            )}
-                            <button
-                                onClick={handleAddRoutine}
-                                className={`py-4 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm uppercase tracking-widest flex-1 ${editingRoutine ? "bg-accent text-white hover:bg-accent/80" : "bg-accent text-white hover:bg-accent/80"}`}
-                            >
-                                {editingRoutine ? "수정 완료" : "루틴 추가하기"}
-                            </button>
-                        </div>
-                    </motion.div>
-                </div>
-            )
-        }
-    </AnimatePresence>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
-    {/* Custom Confirmation Modal */ }
-    <AnimatePresence>
-        {isDeleteConfirmOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setIsDeleteConfirmOpen(false)}
-                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                />
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="relative w-full max-w-sm glass p-8 space-y-6 text-center border-red-500/20"
-                >
-                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
-                        <X className="w-8 h-8 text-red-500" />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-bold">할 일 삭제</h3>
-                        <p className="text-white/40 text-sm leading-relaxed">
-                            이 할 일을 정말 삭제하시겠습니까?<br />
-                            삭제된 데이터는 복구할 수 없습니다.
-                        </p>
-                    </div>
-                    <div className="flex gap-3 pt-2">
-                        <button
+            {/* Routine Delete Confirmation Modal */}
+            <AnimatePresence>
+                {isDeleteConfirmOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             onClick={() => setIsDeleteConfirmOpen(false)}
-                            className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl transition-all"
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-sm glass p-8 space-y-6 text-center border-red-500/20"
                         >
-                            취소
-                        </button>
-                        <button
-                            onClick={confirmDelete}
-                            className="flex-1 py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all active:scale-95"
+                            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
+                                <X className="w-8 h-8 text-red-500" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-bold">할 일 삭제</h3>
+                                <p className="text-white/40 text-sm leading-relaxed">
+                                    이 할 일을 정말 삭제하시겠습니까?<br />
+                                    삭제된 데이터는 복구할 수 없습니다.
+                                </p>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => setIsDeleteConfirmOpen(false)}
+                                    className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl transition-all"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="flex-1 py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all active:scale-95"
+                                >
+                                    삭제하기
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Category Delete Confirmation Modal */}
+            <AnimatePresence>
+                {categoryToDelete && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="w-full max-w-sm glass border-red-500/20 shadow-2xl shadow-red-500/10 p-8 space-y-6 text-center"
                         >
-                            삭제하기
-                        </button>
+                            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <X className="w-8 h-8 text-red-500" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-black text-white">카테고리 삭제</h3>
+                                <p className="text-sm text-white/40 leading-relaxed font-bold">
+                                    <span className="text-white">'{categoryToDelete}'</span> 카테고리를 삭제하시겠습니까?<br />
+                                    해당 카테고리의 모든 루틴은 삭제되지 않고<br />
+                                    유지됩니다.
+                                </p>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => setCategoryToDelete(null)}
+                                    className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl transition-all active:scale-[0.98]"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const newList = categories.filter(c => c.name !== categoryToDelete);
+                                        saveCategoriesToFirestore(newList);
+                                        if (activeCategory === categoryToDelete) setActiveCategory("전체");
+                                        setCategoryToDelete(null);
+                                    }}
+                                    className="flex-1 py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl shadow-lg shadow-red-600/20 transition-all active:scale-[0.98]"
+                                >
+                                    삭제하기
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
-                </motion.div>
-            </div>
-        )}
-    </AnimatePresence>
-    {/* Category Delete Confirmation Modal */ }
-    <AnimatePresence>
-        {categoryToDelete && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="w-full max-w-sm glass border-red-500/20 shadow-2xl shadow-red-500/10 p-8 space-y-6 text-center"
-                >
-                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <X className="w-8 h-8 text-red-500" />
-                    </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-black text-white">카테고리 삭제</h3>
-                        <p className="text-sm text-white/40 leading-relaxed font-bold">
-                            <span className="text-white">'{categoryToDelete}'</span> 카테고리를 삭제하시겠습니까?<br />
-                            해당 카테고리의 모든 루틴은 삭제되지 않고<br />
-                            유지됩니다.
-                        </p>
-                    </div>
-                    <div className="flex gap-3 pt-2">
-                        <button
-                            onClick={() => setCategoryToDelete(null)}
-                            className="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl transition-all active:scale-[0.98]"
-                        >
-                            취소
-                        </button>
-                        <button
-                            onClick={() => {
-                                const newList = categories.filter(c => c.name !== categoryToDelete);
-                                saveCategoriesToFirestore(newList);
-                                if (activeCategory === categoryToDelete) setActiveCategory("전체");
-                                setCategoryToDelete(null);
-                            }}
-                            className="flex-1 py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-2xl shadow-lg shadow-red-600/20 transition-all active:scale-[0.98]"
-                        >
-                            삭제하기
-                        </button>
-                    </div>
-                </motion.div>
-            </div>
-        )}
-    </AnimatePresence>
-        </div >
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
