@@ -34,8 +34,8 @@ export function Sidebar() {
     const { user, logout } = useAuth();
 
     return (
-        <div className="w-72 h-screen glass border-r border-white/10 flex flex-col p-8 fixed left-0 top-0">
-            <div className="flex items-center gap-3 mb-12">
+        <div className="w-72 h-screen glass border-r border-white/10 flex flex-col px-6 py-4 fixed left-0 top-0">
+            <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg shadow-accent/20">
                     <Sparkles className="text-white w-6 h-6" />
                 </div>
@@ -44,7 +44,7 @@ export function Sidebar() {
                 </h1>
             </div>
 
-            <nav className="flex-1 space-y-3 mt-4">
+            <nav className="flex-1 space-y-1">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -52,7 +52,7 @@ export function Sidebar() {
                             key={item.href}
                             href={item.href}
                             className={twMerge(
-                                "flex items-center gap-4 px-5 py-4 rounded-[20px] transition-all duration-300 group",
+                                "flex items-center gap-4 px-4 py-2.5 rounded-[18px] transition-all duration-300 group",
                                 isActive
                                     ? "bg-accent/10 text-accent shadow-lg shadow-accent/5"
                                     : "text-white/40 hover:bg-white/5 hover:text-white"

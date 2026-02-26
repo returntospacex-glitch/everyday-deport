@@ -219,21 +219,21 @@ export default function CalendarPage() {
                                         )}
                                     </div>
 
-                                    <div className="mt-3 space-y-1.5 overflow-hidden">
+                                    <div className="mt-3 space-y-1 overflow-hidden">
                                         {/* 1. Sleep: 😴 수면기록 */}
                                         {(() => {
-                                            const record = sleepRecordsState.find(r => isSameDay(r.date, day));
+                                            const record = sleepRecordsState.find(r => r.date && isSameDay(new Date(r.date), day));
                                             return record ? (
                                                 <div className="flex items-center gap-1.5 bg-purple-500/10 w-full px-2 py-0.5 rounded-lg border border-purple-500/20">
                                                     <Moon className="w-2.5 h-2.5 text-purple-400 fill-current" />
-                                                    <span className="text-[10px] font-black text-purple-300">{record.duration}h</span>
+                                                    <span className="text-[10px] font-black text-purple-300">{record.duration || record.hoursSlept || 0}h</span>
                                                 </div>
                                             ) : <div className="h-[21px]" />; // Spacer for empty lines
                                         })()}
 
                                         {/* 2. Exercise: 💪 운동기록 */}
                                         {(() => {
-                                            const dayExercises = exerciseRecordsState.filter(r => isSameDay(r.date, day));
+                                            const dayExercises = exerciseRecordsState.filter(r => r.date && isSameDay(new Date(r.date), day));
                                             const totalDuration = dayExercises.reduce((acc, cur) => acc + (cur.duration || 0), 0);
                                             return totalDuration > 0 ? (
                                                 <div className="flex items-center gap-1.5 bg-emerald-500/10 w-full px-2 py-0.5 rounded-lg border border-emerald-500/20 truncate">
@@ -245,7 +245,7 @@ export default function CalendarPage() {
 
                                         {/* 3. Reading: 📚 독서기록 */}
                                         {(() => {
-                                            const dayReading = readingRecordsState.filter(r => isSameDay(r.date, day));
+                                            const dayReading = readingRecordsState.filter(r => r.date && isSameDay(new Date(r.date), day));
                                             const totalPages = dayReading.reduce((acc, cur) => acc + (cur.amount || 0), 0);
                                             return totalPages > 0 ? (
                                                 <div className="flex items-center gap-1.5 bg-blue-500/10 w-full px-2 py-0.5 rounded-lg border border-blue-500/20 truncate">
