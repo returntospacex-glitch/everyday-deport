@@ -68,7 +68,8 @@ export default function Dashboard() {
         customInterval: '1',
         selectedDays: [1, 2, 3, 4, 5], // 0(일)-6(토)
         repeatInterval: '1',
-        monthlyDay: format(new Date(), 'd')
+        monthlyDay: format(new Date(), 'd'),
+        date: format(selectedDate, 'yyyy-MM-dd') // 신규: 기본 날짜 설정
     });
 
     // Refs for Auto-focus
@@ -208,7 +209,7 @@ export default function Dashboard() {
         } else {
             await addDoc(collection(db, "users", user.uid, "routines"), {
                 ...routineData,
-                date: format(selectedDate, 'yyyy-MM-dd'), // 일회성인 경우 현재 선택된 날짜 저장
+                date: newRoutine.date, // 선택된 날짜 사용
                 completed: false, // Initial state
                 createdAt: serverTimestamp()
             });
@@ -231,7 +232,8 @@ export default function Dashboard() {
             customInterval: '1',
             selectedDays: [1, 2, 3, 4, 5],
             repeatInterval: '1',
-            monthlyDay: format(new Date(), 'd')
+            monthlyDay: format(new Date(), 'd'),
+            date: format(selectedDate, 'yyyy-MM-dd')
         });
     };
 
@@ -278,7 +280,8 @@ export default function Dashboard() {
             customInterval: routine.repeatDetails?.customInterval || '1',
             selectedDays: routine.repeatDetails?.selectedDays || [1, 2, 3, 4, 5],
             repeatInterval: routine.repeatDetails?.repeatInterval || '1',
-            monthlyDay: routine.repeatDetails?.monthlyDay || format(new Date(), 'd')
+            monthlyDay: routine.repeatDetails?.monthlyDay || format(new Date(), 'd'),
+            date: routine.date || format(selectedDate, 'yyyy-MM-dd')
         });
         setIsModalOpen(true);
     };
@@ -291,6 +294,18 @@ export default function Dashboard() {
         const db = getFirebaseDb();
         await setDoc(doc(db, "users", user.uid, "routines", id), {
             completed: !routine.completed,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+    };
+
+    const toggleImportant = async (id: string) => {
+        if (!user) return;
+        const routine = routines.find(r => r.id === id);
+        if (!routine) return;
+
+        const db = getFirebaseDb();
+        await setDoc(doc(db, "users", user.uid, "routines", id), {
+            isImportant: !routine.isImportant,
             updatedAt: serverTimestamp()
         }, { merge: true });
     };
@@ -489,9 +504,9 @@ export default function Dashboard() {
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-accent rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:scale-105 transition-transform active:scale-95 whitespace-nowrap"
+                        className="flex items-center gap-2 px-8 py-4 bg-accent rounded-full text-lg font-black shadow-xl shadow-accent/30 hover:scale-105 transition-all active:scale-95 whitespace-nowrap"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-5 h-5" />
                         할 일 추가
                     </button>
 
@@ -509,7 +524,14 @@ export default function Dashboard() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05 }}
                                     key={routine.id}
-                                    className={`group glass p-5 flex items-center justify-between hover:border-accent/30 transition-all cursor-pointer ${routine.completed ? "opacity-40" : ""}`}
+                                    onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleImportant(routine.id);
+                                    }}
+                                    className={`group glass p-5 flex items-center justify-between hover:border-accent/30 transition-all cursor-pointer 
+                                        ${routine.completed ? "opacity-40" : ""} 
+                                        ${routine.isImportant ? "border-red-500/50 bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.1)] !opacity-100" : ""}
+                                    `}
                                 >
                                     <div className="flex items-center gap-4 overflow-hidden flex-1" onClick={() => openEditModal(routine)}>
                                         <button
@@ -643,51 +665,66 @@ export default function Dashboard() {
                                     />
                                 </div>
 
-                                {/* Custom Time Input (UX Enhanced) */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-white/40 flex items-center gap-2">
-                                        <Clock className="w-4 h-4" /> 수행 시간
-                                    </label>
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            onClick={() => modalHRef.current?.focus()}
-                                            className="flex-1 flex items-center bg-white/5 border border-white/10 rounded-2xl p-2.5 focus-within:border-accent transition-all cursor-text"
-                                        >
-                                            <input
-                                                ref={modalHRef}
-                                                type="text"
-                                                inputMode="numeric"
-                                                value={newRoutine.h}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onFocus={(e) => e.target.select()}
-                                                onBlur={(e) => handleTimeBlur('h', e.target.value)}
-                                                onChange={(e) => handleHChange(e.target.value)}
-                                                className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
-                                                placeholder="09"
-                                            />
-                                            <span className="text-white/20 font-bold text-xl px-1" onClick={(e) => e.stopPropagation()}>:</span>
-                                            <input
-                                                ref={modalMRef}
-                                                type="text"
-                                                inputMode="numeric"
-                                                value={newRoutine.m}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onFocus={(e) => e.target.select()}
-                                                onBlur={(e) => handleTimeBlur('m', e.target.value)}
-                                                onChange={(e) => {
-                                                    const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
-                                                    setNewRoutine(prev => ({ ...prev, m: val }));
-                                                }}
-                                                className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
-                                                placeholder="00"
-                                            />
+                                {/* Date Input (New) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-white/40 flex items-center gap-2">
+                                            <CalendarIcon className="w-4 h-4" /> 날짜 선택
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={newRoutine.date}
+                                            onChange={(e) => setNewRoutine(prev => ({ ...prev, date: e.target.value }))}
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:outline-none focus:border-accent transition-all text-white font-medium color-scheme-dark"
+                                        />
+                                    </div>
+
+                                    {/* Custom Time Input (UX Enhanced) */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-white/40 flex items-center gap-2">
+                                            <Clock className="w-4 h-4" /> 수행 시간
+                                        </label>
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                onClick={() => modalHRef.current?.focus()}
+                                                className="flex-1 flex items-center bg-white/5 border border-white/10 rounded-2xl p-2.5 focus-within:border-accent transition-all cursor-text"
+                                            >
+                                                <input
+                                                    ref={modalHRef}
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    value={newRoutine.h}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onFocus={(e) => e.target.select()}
+                                                    onBlur={(e) => handleTimeBlur('h', e.target.value)}
+                                                    onChange={(e) => handleHChange(e.target.value)}
+                                                    className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
+                                                    placeholder="09"
+                                                />
+                                                <span className="text-white/20 font-bold text-xl px-1" onClick={(e) => e.stopPropagation()}>:</span>
+                                                <input
+                                                    ref={modalMRef}
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    value={newRoutine.m}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onFocus={(e) => e.target.select()}
+                                                    onBlur={(e) => handleTimeBlur('m', e.target.value)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                                                        setNewRoutine(prev => ({ ...prev, m: val }));
+                                                    }}
+                                                    className="w-14 bg-transparent text-2xl font-bold text-center focus:outline-none text-white font-mono"
+                                                    placeholder="00"
+                                                />
+                                            </div>
+                                            <button
+                                                onClick={() => setNewRoutine(prev => ({ ...prev, ampm: prev.ampm === "AM" ? "PM" : "AM" }))}
+                                                className="w-20 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-bold text-accent hover:bg-white/10 transition-all active:scale-95 text-xl"
+                                            >
+                                                {newRoutine.ampm}
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => setNewRoutine(prev => ({ ...prev, ampm: prev.ampm === "AM" ? "PM" : "AM" }))}
-                                            className="w-20 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center font-bold text-accent hover:bg-white/10 transition-all active:scale-95 text-xl"
-                                        >
-                                            {newRoutine.ampm}
-                                        </button>
                                     </div>
                                 </div>
 
@@ -879,7 +916,7 @@ export default function Dashboard() {
                                 )}
                                 <button
                                     onClick={handleAddRoutine}
-                                    className={`py-4 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm uppercase tracking-widest flex-1 bg-accent text-white hover:bg-accent/80`}
+                                    className={`py-5 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-lg uppercase tracking-widest flex-1 bg-accent text-white hover:bg-accent/80`}
                                 >
                                     {editingRoutine ? "수정 완료" : "루틴 추가하기"}
                                 </button>
