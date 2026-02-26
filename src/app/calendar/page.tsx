@@ -56,24 +56,29 @@ export default function CalendarPage() {
         const db = getFirebaseDb();
 
         // 1. Sleep Records
-        const sleepUnsub = onSnapshot(collection(db, "users", user.uid, "sleepRecords"), (snapshot) => {
-            const loaded = snapshot.docs.map(doc => ({
-                ...doc.data(),
-                id: doc.id,
-                date: new Date((doc.data() as any).date),
-                bedTime: new Date((doc.data() as any).bedTime),
-                wakeTime: new Date((doc.data() as any).wakeTime)
-            }));
+        const sleepUnsub = onSnapshot(collection(db, "users", user.uid, "sleep"), (snapshot) => {
+            const loaded = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                return {
+                    ...data,
+                    id: doc.id,
+                    date: data.date?.toDate ? data.date.toDate() : new Date(data.date),
+                    duration: data.hoursSlept
+                };
+            });
             setSleepRecordsState(loaded);
         });
 
         // 2. Exercise Records
-        const exerciseUnsub = onSnapshot(collection(db, "users", user.uid, "exerciseRecords"), (snapshot) => {
-            const loaded = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                date: (doc.data().date as Timestamp).toDate()
-            }));
+        const exerciseUnsub = onSnapshot(collection(db, "users", user.uid, "exercises"), (snapshot) => {
+            const loaded = snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                return {
+                    id: doc.id,
+                    ...data,
+                    date: data.date?.toDate ? data.date.toDate() : new Date(data.date)
+                };
+            });
             setExerciseRecordsState(loaded);
         });
 
