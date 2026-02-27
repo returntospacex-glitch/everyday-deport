@@ -170,12 +170,12 @@ export function GoogleCalendarWidget({ selectedDate = new Date() }: GoogleCalend
             </div>
 
             <a
-                href="https://calendar.google.com"
+                href="https://calendar.notion.so"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center justify-center gap-1.5 w-full py-2 text-[11px] font-bold text-white/20 hover:text-white transition-all group"
             >
-                Google Calendar 열기
+                Notion Calendar 열기
                 <ExternalLink className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
         </div>

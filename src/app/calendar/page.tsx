@@ -290,6 +290,24 @@ export default function CalendarPage() {
                                             }
                                             return <div className="h-4" />;
                                         })()}
+                                        {/* Row 4: Daily Rating (Stars) */}
+                                        {(() => {
+                                            const record = dailyRecordsState.find(r => {
+                                                if (!r.date) return false;
+                                                const d = r.date instanceof Date ? r.date : (r.date.toDate ? r.date.toDate() : new Date(r.date));
+                                                return isSameDay(d, day);
+                                            });
+                                            if (record && record.score > 0) {
+                                                return (
+                                                    <div className="flex items-center gap-0.5 mt-1">
+                                                        {[...Array(record.score)].map((_, i) => (
+                                                            <Star key={i} className="w-2 h-2 text-yellow-400 fill-current shadow-[0_0_5px_rgba(250,204,21,0.5)]" />
+                                                        ))}
+                                                    </div>
+                                                );
+                                            }
+                                            return <div className="h-3" />;
+                                        })()}
                                     </div>
                                 </motion.div>
                             </Link>

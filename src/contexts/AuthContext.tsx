@@ -28,8 +28,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const auth = getFirebaseAuth();
-        // Try to recover token from session storage if it exists
-        const savedToken = typeof window !== 'undefined' ? sessionStorage.getItem('google_access_token') : null;
+        // Try to recover token from local storage if it exists
+        const savedToken = typeof window !== 'undefined' ? localStorage.getItem('google_access_token') : null;
         if (savedToken) setGoogleAccessToken(savedToken);
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (token) {
                 setGoogleAccessToken(token);
                 if (typeof window !== 'undefined') {
-                    sessionStorage.setItem('google_access_token', token);
+                    localStorage.setItem('google_access_token', token);
                 }
             }
         } catch (error) {
@@ -70,14 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await signOut(auth);
         setGoogleAccessToken(null);
         if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('google_access_token');
+            localStorage.removeItem('google_access_token');
         }
     };
 
     const clearGoogleToken = () => {
         setGoogleAccessToken(null);
         if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('google_access_token');
+            localStorage.removeItem('google_access_token');
         }
     };
 

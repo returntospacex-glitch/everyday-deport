@@ -25,7 +25,9 @@ import {
     endOfWeek,
     addMonths,
     subMonths,
-    isSameMonth
+    isSameMonth,
+    isSameWeek,
+    parseISO
 } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
@@ -58,6 +60,25 @@ export default function DailyPage() {
     const [error, setError] = useState<string | null>(null);
 
     const { user } = useAuth();
+
+    // Averages calculation logic
+    const averages = useMemo(() => {
+        if (records.length === 0) return { weekly: 0, monthly: 0 };
+
+        const now = new Date();
+        const weekRecords = records.filter(r => isSameWeek(parseISO(r.date), now, { weekStartsOn: 0 }));
+        const monthRecords = records.filter(r => isSameMonth(parseISO(r.date), now));
+
+        const calcAvg = (recs: DailyRecord[]) => {
+            const scores = recs.filter(r => r.score > 0).map(r => r.score);
+            return scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : "0.0";
+        };
+
+        return {
+            weekly: calcAvg(weekRecords),
+            monthly: calcAvg(monthRecords)
+        };
+    }, [records]);
 
     // Firestore Load (Real-time)
     useEffect(() => {
@@ -215,6 +236,28 @@ export default function DailyPage() {
                 </div>
             </header>
 
+            {/* Analytics Row */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="glass p-6 flex items-center justify-between border-white/5 bg-white/2 hover:bg-white/5 transition-all">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">이번 주 평균</p>
+                        <h3 className="text-2xl font-black text-white">{averages.weekly}</h3>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                        <Star className="w-5 h-5 text-purple-400 fill-current" />
+                    </div>
+                </div>
+                <div className="glass p-6 flex items-center justify-between border-white/5 bg-white/2 hover:bg-white/5 transition-all">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">이번 달 평균</p>
+                        <h3 className="text-2xl font-black text-white">{averages.monthly}</h3>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-yellow-400/10 flex items-center justify-center border border-yellow-400/20">
+                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left: Entry Section (7 cols) */}
                 <section className="lg:col-span-7 space-y-8">
@@ -226,9 +269,9 @@ export default function DailyPage() {
                         </div>
                         <div className="flex justify-between items-center px-4">
                             {[
-                                { s: 1, label: "우울", emoji: "😢", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-                                { s: 2, label: "그저 그럼", emoji: "😐", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
-                                { s: 3, label: "보통", emoji: "😊", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+                                { s: 1, label: "최악", emoji: "😢", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+                                { s: 2, label: "나쁨", emoji: "😐", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
+                                { s: 3, label: "그럭저럭", emoji: "😊", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
                                 { s: 4, label: "좋음", emoji: "✨", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
                                 { s: 5, label: "최고", emoji: "🤩", color: "bg-yellow-400 text-black border-yellow-400 shadow-lg shadow-yellow-400/20" }
                             ].map((item) => (
@@ -372,6 +415,6 @@ export default function DailyPage() {
                     </div>
                 </section>
             </div>
-        </div>
+        </div >
     );
 }
