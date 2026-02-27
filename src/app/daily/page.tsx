@@ -270,9 +270,9 @@ export default function DailyPage() {
                         <div className="flex justify-between items-center px-4">
                             {[
                                 { s: 1, label: "최악", emoji: "😢", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-                                { s: 2, label: "나쁨", emoji: "😐", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
-                                { s: 3, label: "그럭저럭", emoji: "😊", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
-                                { s: 4, label: "좋음", emoji: "✨", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+                                { s: 2, label: "나쁨", emoji: "😞", color: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
+                                { s: 3, label: "그럭저럭", emoji: "😐", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+                                { s: 4, label: "좋음", emoji: "😊", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
                                 { s: 5, label: "최고", emoji: "🤩", color: "bg-yellow-400 text-black border-yellow-400 shadow-lg shadow-yellow-400/20" }
                             ].map((item) => (
                                 <button
