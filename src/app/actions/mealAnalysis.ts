@@ -12,7 +12,12 @@ export async function analyzeMeals(meals: any[], customInstructions?: string) {
 
     try {
         // Efficient and widely available models (Using standardized identifiers)
-        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+        const modelsToTry = [
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-1.5-pro",
+            "gemini-pro"
+        ];
         let lastError: any = null;
         let finalResponse = null;
 
