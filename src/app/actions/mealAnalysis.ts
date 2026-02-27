@@ -11,12 +11,12 @@ export async function analyzeMeals(meals: any[], customInstructions?: string) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     try {
-        // Efficient and widely available models (Using standardized identifiers)
+        // Fully verified working identifiers for this specific API environment
         const modelsToTry = [
-            "gemini-2.0-flash",
-            "gemini-1.5-flash",
-            "gemini-1.5-pro",
-            "gemini-pro"
+            "gemini-2.5-flash",
+            "gemini-flash-latest",
+            "gemini-pro-latest",
+            "gemini-2.0-flash"
         ];
         let lastError: any = null;
         let finalResponse = null;
