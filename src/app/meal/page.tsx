@@ -627,6 +627,51 @@ export default function MealPage() {
                         </motion.div>
                     </div>
                 )}
+
+                {/* AI Settings Modal */}
+                {showSettingsModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-lg glass p-8 space-y-6"
+                        >
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <Settings className="w-5 h-5 text-indigo-400" />
+                                    <h3 className="text-xl font-black text-white">AI 식단 가이드라인 설정</h3>
+                                </div>
+                                <button onClick={() => setShowSettingsModal(false)}><X className="text-white/40 hover:text-white" /></button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <p className="text-sm text-white/40 font-bold leading-relaxed">
+                                    AI가 사용자님의 생활 패턴이나 취향을 반영하여 더 정확하게 분석할 수 있습니다.<br />
+                                    <span className="text-indigo-400 text-xs">예: "공익근무 중이라 활동량이 적음", "자주 가는 메뉴: XX 칼국수"</span>
+                                </p>
+
+                                <textarea
+                                    value={customInstructions}
+                                    onChange={(e) => setCustomInstructions(e.target.value)}
+                                    placeholder="분석 시 고려할 개인 정보나 원하는 분석 스타일을 입력하세요..."
+                                    className="w-full h-48 bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white text-sm font-medium focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
+                                />
+
+                                <p className="text-[11px] text-white/20">
+                                    * 설정된 가이드라인은 Firestore에 안전하게 저장되며 모든 분석에 반영됩니다.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowSettingsModal(false)}
+                                className="w-full py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-500/20"
+                            >
+                                설정 저장 및 닫기
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
             </AnimatePresence>
         </div>
     );
