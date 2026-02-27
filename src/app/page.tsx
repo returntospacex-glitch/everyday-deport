@@ -310,19 +310,52 @@ export default function Dashboard() {
         }, { merge: true });
     };
 
+    const handleMoveToToday = async (id: string) => {
+        if (!user) return;
+        const db = getFirebaseDb();
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        await setDoc(doc(db, "users", user.uid, "routines", id), {
+            date: todayStr,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+    };
+
+    const handleDismissOverdue = async (id: string) => {
+        if (!user) return;
+        const db = getFirebaseDb();
+        await setDoc(doc(db, "users", user.uid, "routines", id), {
+            isOverdueDismissed: true,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+    };
+
+    const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+
     const filteredRoutines = routines.filter(r => {
         const categoryMatch = activeCategory === "전체" || r.category === activeCategory;
         if (!categoryMatch) return false;
 
-        const dateStr = format(selectedDate, 'yyyy-MM-dd');
-
         // 일회성 루틴 필터링
         if (!r.isRecurring) {
-            return r.date === dateStr;
+            return r.date === selectedDateStr;
         }
 
-        // 반복 루틴 필터링 (기존 로직 유지 또는 확장 가능)
+        // 반복 루틴 필터링
         return true;
+    });
+
+    const overdueRoutines = routines.filter(r => {
+        // 오늘 날짜를 보고 있을 때만 밀린 일정 표시
+        if (selectedDateStr !== todayStr) return false;
+
+        const categoryMatch = activeCategory === "전체" || r.category === activeCategory;
+        if (!categoryMatch) return false;
+
+        return !r.isRecurring &&
+            !r.completed &&
+            r.date < todayStr &&
+            !r.isOverdueDismissed;
     });
 
     // Time Input Handler
@@ -582,6 +615,48 @@ export default function Dashboard() {
                             ))
                         )}
                     </div>
+
+                    {/* [NEW] Overdue Routines Section */}
+                    {overdueRoutines.length > 0 && (
+                        <div className="mt-8 space-y-4">
+                            <h4 className="text-sm font-bold text-red-400/60 flex items-center gap-2 px-2">
+                                <Clock className="w-4 h-4" />
+                                밀린 할 일
+                            </h4>
+                            <div className="grid gap-3">
+                                {overdueRoutines.map((routine) => (
+                                    <motion.div
+                                        key={routine.id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="glass p-4 flex items-center justify-between border-red-500/10 bg-red-500/5 opacity-60 hover:opacity-100 transition-all group"
+                                    >
+                                        <div className="flex items-center gap-3 overflow-hidden flex-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500/40" />
+                                            <div className="truncate">
+                                                <h3 className="font-bold text-base text-white/80 truncate">{routine.title}</h3>
+                                                <p className="text-[10px] text-white/40">{routine.date} 일정</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleMoveToToday(routine.id)}
+                                                className="px-3 py-1.5 bg-accent/10 hover:bg-accent/20 text-accent text-[10px] font-bold rounded-lg transition-all"
+                                            >
+                                                오늘로 변경
+                                            </button>
+                                            <button
+                                                onClick={() => handleDismissOverdue(routine.id)}
+                                                className="p-1.5 text-white/20 hover:text-white/60 transition-all"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* [RIGHT] Summary Side Panel */}
