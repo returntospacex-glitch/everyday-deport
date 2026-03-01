@@ -19,17 +19,7 @@ export function BackgroundMusic() {
         if (audioRef.current) {
             audioRef.current.volume = 0.15;
         }
-
-        const handleFirstInteraction = () => {
-            if (!hasInteracted && audioRef.current) {
-                safePlay();
-                setHasInteracted(true);
-            }
-        };
-
-        window.addEventListener('click', handleFirstInteraction);
-        return () => window.removeEventListener('click', handleFirstInteraction);
-    }, [hasInteracted]);
+    }, []);
 
     const safePlay = () => {
         if (audioRef.current) {

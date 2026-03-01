@@ -158,15 +158,20 @@ export default function MealPage() {
 
     const displayMeals = useMemo(() => {
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
-        // Filter meals for selected date
-        const dayMeals = meals.filter(m => m.date === dateStr).map(m => ({ ...m, isYesterday: false }));
 
-        // Filter and mark yesterday's meals
-        const prevDateStr = format(subDays(selectedDate, 1), 'yyyy-MM-dd');
-        const yesterdayMeals = meals.filter(m => m.date === prevDateStr).map(m => ({ ...m, isYesterday: true }));
+        // Sort all meals by date and time in descending order to find the latest
+        const sortedAllMeals = [...meals].sort((a, b) =>
+            b.date.localeCompare(a.date) || b.time.localeCompare(a.time)
+        );
 
-        // Combine and sort by time
-        return [...yesterdayMeals, ...dayMeals].sort((a, b) => a.time.localeCompare(b.time));
+        // Take top 5 most recent meals
+        const recent5 = sortedAllMeals.slice(0, 5);
+
+        // Mark meals that are not from the selected date
+        return recent5.map(m => ({
+            ...m,
+            isOtherDay: m.date !== dateStr
+        })).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
     }, [meals, selectedDate]);
 
     // Auto-analyze last 5 meals when meals change (Deep dependency check)
@@ -288,7 +293,7 @@ export default function MealPage() {
                     <h1 className="text-[2.6rem] md:text-[3.1rem] font-black text-white tracking-tighter flex items-center gap-4 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent uppercase">
                         식단 정보
                         <div className="flex items-center justify-center min-w-[3rem] h-8 px-3 rounded-full bg-orange-500 text-white text-xs font-black shadow-[0_0_20px_rgba(249,115,22,0.4)] animate-pulse">
-                            {displayMeals.filter(m => !(m as any).isYesterday).length} MEALS
+                            {displayMeals.filter(m => !(m as any).isOtherDay).length} MEALS
                         </div>
                     </h1>
                 </div>
@@ -308,12 +313,12 @@ export default function MealPage() {
                     <h2 className="text-base font-black text-white/40 tracking-widest uppercase">오늘의 식사 요약</h2>
                     <div className="flex items-baseline gap-4 relative z-10">
                         <div className="flex items-baseline gap-2">
-                            <span className="text-5xl font-black text-white">{displayMeals.filter(m => !(m as any).isYesterday).length}</span>
+                            <span className="text-5xl font-black text-white">{displayMeals.filter(m => !(m as any).isOtherDay).length}</span>
                             <span className="text-lg font-bold text-white/40">번의 식사</span>
                         </div>
                         {displayMeals.filter(m => !(m as any).isYesterday).some(m => m.calories) && (
                             <div className="text-sm font-bold text-white/20">
-                                (약 {displayMeals.filter(m => !(m as any).isYesterday).reduce((acc, cur) => acc + (cur.calories || 0), 0)} kcal)
+                                (약 {displayMeals.filter(m => !(m as any).isOtherDay).reduce((acc, cur) => acc + (cur.calories || 0), 0)} kcal)
                             </div>
                         )}
                     </div>
@@ -422,8 +427,8 @@ export default function MealPage() {
                                 key={meal.id}
                                 layout
                                 initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: meal.isYesterday ? 0.5 : 1, y: 0 }}
-                                className={`glass group relative overflow-hidden transition-all hover:bg-white/10 ${meal.isYesterday ? 'border-dashed border-white/10 bg-white/[0.02]' : ''}`}
+                                animate={{ opacity: meal.isOtherDay ? 0.3 : 1, y: 0 }}
+                                className={`glass group relative overflow-hidden transition-all hover:bg-white/10 ${meal.isOtherDay ? 'border-dashed border-white/10 bg-white/[0.01]' : ''}`}
                             >
                                 <div className="p-6 flex items-center justify-between">
                                     <div className="flex items-center gap-6">
@@ -434,8 +439,8 @@ export default function MealPage() {
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{meal.type}</span>
                                                 <span className="text-[10px] font-black font-mono text-white/20 tracking-tighter uppercase">{meal.time}</span>
-                                                {meal.isYesterday && (
-                                                    <span className="px-1.5 py-0.5 bg-white/5 text-[9px] font-black text-white/30 rounded uppercase tracking-tighter">Yesterday</span>
+                                                {meal.isOtherDay && (
+                                                    <span className="px-1.5 py-0.5 bg-white/5 text-[9px] font-black text-white/30 rounded uppercase tracking-tighter">{meal.date}</span>
                                                 )}
                                             </div>
                                             <h4 className="text-xl font-bold text-white tracking-tight">{meal.menu}</h4>
