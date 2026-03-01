@@ -259,12 +259,19 @@ export default function SleepPage() {
             return { date: format(day, 'M/d'), time: parseFloat(timeVal.toFixed(3)) };
         });
 
-        const currentAvg = recentTrend.reduce((acc, curr) => acc + curr.hours, 0) / 7;
+        const recentValidDays = recentTrend.filter(d => d.hours > 0);
+        const currentAvg = recentValidDays.length > 0
+            ? recentTrend.reduce((acc, curr) => acc + curr.hours, 0) / recentValidDays.length
+            : 0;
+
         const prevTrend = prevDays.map(day => {
             const r = records.find(rec => isSameDay(rec.date, day));
             return r ? r.duration : 0;
         });
-        const prevAvg = prevTrend.reduce((acc, curr) => acc + curr, 0) / 7;
+        const prevValidDays = prevTrend.filter(h => h > 0);
+        const prevAvg = prevValidDays.length > 0
+            ? prevTrend.reduce((acc, curr) => acc + curr, 0) / prevValidDays.length
+            : 0;
         const diffHours = currentAvg - prevAvg;
         const totalMinutes = Math.abs(Math.round(diffHours * 60));
         const h = Math.floor(totalMinutes / 60);
@@ -411,7 +418,7 @@ export default function SleepPage() {
                     <div className="h-60 flex items-end justify-between gap-4 px-2 pb-2">
                         {stats.recentTrend.map((data: any, i: number) => (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2 group relative">
-                                <span className="absolute -top-7 text-[12px] font-black text-white">{data.hours}h</span>
+                                <span className="absolute -top-7 text-[12px] font-black text-white">{data.hours.toFixed(1)}h</span>
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${data.hours * 16}px` }}
@@ -599,7 +606,7 @@ export default function SleepPage() {
                                 <div key={day.toISOString()} onClick={() => setSelectedDate(day)} className={`min-h-[120px] p-4 border-t border-white/5 relative group transition-all cursor-pointer hover:bg-white/5 ${!isCurrentMonth ? 'opacity-10' : 'opacity-100'} ${isSameDay(day, selectedDate) ? 'bg-purple-500/10' : ''}`}>
                                     <div className="flex justify-between items-start mb-2">
                                         <span className={`text-[18px] font-black ${isSameDay(day, new Date()) ? 'text-purple-400' : 'text-white/30'}`}>{format(day, 'd')}</span>
-                                        {r && <span className="text-[18px] font-black tracking-tighter drop-shadow-md" style={{ color: getSleepColor(r.duration) }}>{r.duration}h</span>}
+                                        {r && <span className="text-[18px] font-black tracking-tighter drop-shadow-md" style={{ color: getSleepColor(r.duration) }}>{r.duration.toFixed(1)}h</span>}
                                     </div>
                                     {r && (
                                         <div className="mt-3 space-y-2">
@@ -629,7 +636,7 @@ export default function SleepPage() {
                     <div className="flex-1 flex items-end gap-5 px-2 pb-2">
                         {stats.monthlyStats.map((week: any, i: number) => (
                             <div key={i} className="flex-1 flex flex-col items-center gap-3 group relative">
-                                <span className="absolute -top-7 text-[13px] font-black text-white">{week.avg}h</span>
+                                <span className="absolute -top-7 text-[13px] font-black text-white">{week.avg.toFixed(1)}h</span>
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${week.avg * 18}px` }}
@@ -658,7 +665,7 @@ export default function SleepPage() {
                     <div className="flex-1 flex items-end gap-5 px-2 pb-2">
                         {stats.monthlyTrend.map((item: any, i: number) => (
                             <div key={i} className="flex-1 flex flex-col items-center gap-3 group relative cursor-pointer" onClick={() => setSelectedDate(item.fullDate)}>
-                                <span className={`absolute -top-7 text-[13px] font-black transition-all ${isSameMonth(selectedDate, item.fullDate) ? 'text-purple-400 scale-110' : 'text-white'}`}>{item.avg}h</span>
+                                <span className={`absolute -top-7 text-[13px] font-black transition-all ${isSameMonth(selectedDate, item.fullDate) ? 'text-purple-400 scale-110' : 'text-white'}`}>{item.avg.toFixed(1)}h</span>
                                 <motion.div
                                     initial={{ height: 0 }}
                                     animate={{ height: `${(item.avg - 4) * 30}px` }}
@@ -756,7 +763,7 @@ export default function SleepPage() {
                                                                 <div className="space-y-5">
                                                                     <div className="flex justify-between items-end">
                                                                         <span className="text-[11px] font-black text-white/40 tracking-widest uppercase">월 평균 수면</span>
-                                                                        <span className="text-2xl font-black text-white">{mStats.avgDuration}h</span>
+                                                                        <span className="text-2xl font-black text-white">{parseFloat(mStats.avgDuration).toFixed(1)}h</span>
                                                                     </div>
                                                                     <div className="flex justify-between items-end">
                                                                         <span className="text-[11px] font-black text-white/40 tracking-widest uppercase">취침 일관성</span>
